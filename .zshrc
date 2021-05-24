@@ -22,7 +22,7 @@ ZSH_THEME="amuse"
 
 # Uncomment the following line to use hyphen-insensitive completion.
 # Case-sensitive completion must be off. _ and - will be interchangeable.
-HYPHEN_INSENSITIVE="true"
+# HYPHEN_INSENSITIVE="true"
 
 # Uncomment the following line to disable bi-weekly auto-update checks.
 # DISABLE_AUTO_UPDATE="true"
@@ -67,9 +67,6 @@ plugins=(
     )
 
 source $ZSH/oh-my-zsh.sh
-
-alias config="dotbare"
-export EDITOR='emacs'
 
 autoload -U +X bashcompinit && bashcompinit
 complete -o nospace -C /usr/local/bin/terraform terraform
