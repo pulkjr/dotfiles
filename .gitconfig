@@ -1,0 +1,39 @@
+# This is Git's per-user configuration file.
+[user]
+	name = Joseph Pulk
+	email = joseph.pulk@netapp.com
+[diff]
+  tool = vscode
+[difftool "vscode"]
+  cmd = code --wait --diff $LOCAL $REMOTE
+[merge]
+  tool = vscode
+[mergetool "vscode"]
+  cmd = code --wait $MERGED
+# Please adapt and uncomment the following lines:
+[help]
+	autoCorrect = -1
+[log]
+	abbrevCommit = true
+	decorate = short
+[apply]
+	ignoreWhitespace = change
+[rerere]
+	enabled = true
+	autoUpdate = true
+[am]
+	threeWay = true
+[fetch]
+	prune = true
+[core]
+	editor = emacs
+    	pager = delta
+[delta]
+    plus-style = "syntax #012800"
+    minus-style = "syntax #340001"
+    syntax-theme = Monokai Extended
+    navigate = true
+    side-by-side = true
+
+[interactive]
+    diffFilter = delta --color-only
