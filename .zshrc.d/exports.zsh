@@ -12,3 +12,5 @@ export FZF_DEFAULT_COMMAND='ag --hidden --norecurse --ignore .git -g ""'
 
 # Set the default editor to emacs
 export EDITOR='emacs'
+
+export PATH="$PATH:/Users/jpulk/.emacs.d/bin"

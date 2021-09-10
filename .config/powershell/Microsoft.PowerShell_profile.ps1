@@ -1,7 +1,7 @@
 Import-Module -Name Microsoft.PowerShell.Management, Microsoft.PowerShell.Security, Microsoft.PowerShell.Utility -Verbose:$false
 
 Import-Module oh-my-posh, Terminal-Icons
-Set-PoshPrompt -Theme /Users/jpulk/.go-my-posh.json
+Set-PoshPrompt -Theme ys
 Set-PSReadLineOption -Colors @{ Parameter = '#34b7eb' }
 
 . "$( ([System.IO.FileInfo]$PROFILE).directory.FullName )/aliases.ps1"
