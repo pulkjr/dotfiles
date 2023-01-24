@@ -1,6 +1,6 @@
-Import-Module -Name Microsoft.PowerShell.Management, Microsoft.PowerShell.Security, Microsoft.PowerShell.Utility, NetApp.ONTAP -Verbose:$false
+Import-Module -Name Microsoft.PowerShell.Management, Microsoft.PowerShell.Security, Microsoft.PowerShell.Utility, NetApp.ONTAP, Terminal-Icons -Verbose:$false
 oh-my-posh init pwsh --config "$( ([System.IO.FileInfo]$PROFILE).directory.FullName )/atomicBit.omp.json" | Invoke-Expression
-Import-Module Terminal-Icons
+
 try
 {
     Import-Module VMware.PowerCLI -ErrorAction SilentlyContinue
@@ -55,6 +55,10 @@ if ( -not ([string]::IsNullOrEmpty( $jiraApiKey ) ) )
         New-JiraSession -Credential $jiraCred -Headers $jiraHeaders | Out-Null
     }
 }
+else
+{
+    Write-Host -ForegroundColor Red "Jira API Key not present"
+}
 
 
 
@@ -74,8 +78,17 @@ if ( -not ([string]::IsNullOrEmpty( $confluenceApiKey ) ) )
     }
     Set-ConfluenceInfo -Credential $confluenceCred -BaseURI 'https://confluence01.development.smit-th.com/'
 }
+else
+{
+    Write-Host -ForegroundColor Red "Confluent API Key not present"
+}
+
 [string] $cmciUserName = (bw get "username" "cmci")
 if ( -not ([string]::IsNullOrEmpty( $cmciUserName ) ) )
 {
     [pscredential]$cmci = [PSCredential]::new($cmciUserName, ( ConvertTo-SecureString -String (bw get "password" "cmci") -AsPlainText ))
+}
+else
+{
+    Write-Host -ForegroundColor Red "CMCI username not present"
 }
