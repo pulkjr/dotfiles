@@ -1,4 +1,4 @@
-Import-Module -Name Microsoft.PowerShell.Management, Microsoft.PowerShell.Security, Microsoft.PowerShell.Utility, SecretManagement.LastPass, netapp.ontap -Verbose:$false
+Import-Module -Name Microsoft.PowerShell.Management, Microsoft.PowerShell.Security, Microsoft.PowerShell.Utility, NetApp.ONTAP -Verbose:$false
 oh-my-posh init pwsh --config "$( ([System.IO.FileInfo]$PROFILE).directory.FullName )/atomicBit.omp.json" | Invoke-Expression
 Import-Module Terminal-Icons
 try
@@ -28,27 +28,54 @@ elseif ( -not $IsMacOS )
     Set-Location ~\git
 }
 
-$jiraApiKey = ''
-$confluenceCred = [PSCredential]::new('joseph.pulk@netapp.com', ( ConvertTo-SecureString -String '' -AsPlainText ))
-$jira = @{
-    link     = 'https://jira01.development.smit-th.com/'
-    username = 'joseph.pulk@netapp.com'
-    key      = ConvertTo-SecureString $jiraApiKey -AsPlainText -Force
-}
-$jiraCred = [pscredential]::new( $jira.UserName, $jira.key )
+[string] $jiraApiKey = (bw get 'password' 'JiraApiKey')
 
-$jiraHeaders = @{
-    Authorization = "Bearer $jiraApiKey"
-}
-Set-JiraConfigServer -Server $jira.link
-
-
-$HTTP_Request = [System.Net.WebRequest]::Create($jira.link)
-$HTTP_Response = $HTTP_Request.GetResponse()
-$HTTP_Status = [int]$HTTP_Response.StatusCode
-
-If ($HTTP_Status -eq 200)
+if ( -not ([string]::IsNullOrEmpty( $jiraApiKey ) ) )
 {
-    New-JiraSession -Credential $jiraCred -Headers $jiraHeaders | Out-Null
+    Import-Module JiraPs
+    $jiraUsername = (bw get "username" "JiraApiKey")
+    $jira = @{
+        link     = 'https://jira01.development.smit-th.com/'
+        username = $jiraUsername
+        key      = ConvertTo-SecureString $jiraApiKey -AsPlainText -Force
+    }
+    $jiraCred = [pscredential]::new( $jira.UserName, $jira.key )
+    
+    $jiraHeaders = @{
+        Authorization = "Bearer $jiraApiKey"
+    }
+    Set-JiraConfigServer -Server $jira.link
+
+    $HTTP_Request = [System.Net.WebRequest]::Create($jira.link)
+    $HTTP_Response = $HTTP_Request.GetResponse()
+    $HTTP_Status = [int]$HTTP_Response.StatusCode
+    
+    If ($HTTP_Status -eq 200)
+    {
+        New-JiraSession -Credential $jiraCred -Headers $jiraHeaders | Out-Null
+    }
 }
-# Set-ConfluenceInfo -Credential $confluenceCred -BaseURI 'https://confluence01.development.smit-th.com/'
+
+
+
+[string] $confluenceApiKey = (bw get "password" "ConfluenceApiKey")
+if ( -not ([string]::IsNullOrEmpty( $confluenceApiKey ) ) )
+{
+    Import-Module ConfluencePS
+    $confluenceUserName = (bw get "password" "ConfluenceApiKey")
+    $confluenceCred = [PSCredential]::new($confluenceUserName, ( ConvertTo-SecureString -String $confluenceApiKey -AsPlainText ))
+    $HTTP_Request = [System.Net.WebRequest]::Create('https://confluence01.development.smit-th.com/')
+    $HTTP_Response = $HTTP_Request.GetResponse()
+    $HTTP_Status = [int]$HTTP_Response.StatusCode
+    
+    If ($HTTP_Status -eq 200)
+    {
+        New-JiraSession -Credential $jiraCred -Headers $jiraHeaders | Out-Null
+    }
+    Set-ConfluenceInfo -Credential $confluenceCred -BaseURI 'https://confluence01.development.smit-th.com/'
+}
+[string] $cmciUserName = (bw get "username" "cmci")
+if ( -not ([string]::IsNullOrEmpty( $cmciUserName ) ) )
+{
+    [pscredential]$cmci = [PSCredential]::new($cmciUserName, ( ConvertTo-SecureString -String (bw get "password" "cmci") -AsPlainText ))
+}
