@@ -64,7 +64,6 @@ plugins=(
     docker-compose
     macos
     tmux
-    dotbare
     zsh-autosuggestions
     )
 
