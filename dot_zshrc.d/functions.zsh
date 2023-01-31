@@ -48,4 +48,4 @@ fzf_open_file() {
 alias fcode='fzf_open_file'
 
 # Run neofetch
-neofetch
+# neofetch
