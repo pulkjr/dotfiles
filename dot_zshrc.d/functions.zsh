@@ -4,7 +4,7 @@
 # https://bluz71.github.io/2018/11/26/fuzzy-finding-in-bash-with-fzf.html
 fzf_git_log() {
 	local selections=$(
-		git ll --color=always "$@" |
+		git log --graph --format="%C(yellow)%h%C(red)%d%C(reset) - %C(bold green)(%ar)%C(reset) %s %C(blue)<%an>%C(reset)" --color=always "$@" |
 			fzf --ansi --no-sort --no-height \
 				--preview "echo {} | grep -o '[a-f0-9]\{7\}' | head -1 |
                        xargs -I@ sh -c 'git show --color=always @'"
@@ -16,7 +16,18 @@ fzf_git_log() {
 }
 
 alias gll='fzf_git_log'
-alias flog='fzf_git_log'
+
+# fshow - git commit browser
+fshow() {
+  git log --graph --color=always \
+      --format="%C(auto)%h%d %s %C(black)%C(bold)%cr" "$@" |
+  fzf --ansi --no-sort --reverse --tiebreak=index --bind=ctrl-s:toggle-sort \
+      --bind "ctrl-m:execute:
+                (grep -o '[a-f0-9]\{7\}' | head -1 |
+                xargs -I % sh -c 'git show --color=always % | less -R') << 'FZF-EOF'
+                {}
+FZF-EOF"
+}
 
 # Fuzzy find a directory, with optional initial directory name, and then change to it:
 # - If one directory matches then cd immediately
