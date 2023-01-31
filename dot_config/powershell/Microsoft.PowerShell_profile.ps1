@@ -1,5 +1,5 @@
 Import-Module -Name Microsoft.PowerShell.Management, Microsoft.PowerShell.Security, Microsoft.PowerShell.Utility, NetApp.ONTAP, Terminal-Icons -Verbose:$false
-oh-my-posh init pwsh --config "$( ([System.IO.FileInfo]$PROFILE).directory.FullName )/atomicBit.omp.json" | Invoke-Expression
+oh-my-posh init pwsh --config "$( ([System.IO.FileInfo]$PROFILE).directory.FullName )/amro.omp.json" | Invoke-Expression
 
 try
 {
