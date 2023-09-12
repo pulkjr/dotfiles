@@ -96,3 +96,5 @@ _custom_zsh_config_loaded=1
 for file ($_custom_zsh_config_base/.zshrc.d/*.zsh(N)); do
 	source $file
 done
+
+export PATH="/opt/homebrew/opt/node@18/bin:$PATH"
