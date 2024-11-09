@@ -63,3 +63,7 @@ eval "$(zoxide init zsh --cmd cd)"
 
 # Run neofetch
 # neofetch
+
+# Open vscode
+# code () { VSCODE_CWD="$PWD" open -n -b "com.microsoft.VSCode" --args $* ;}
+
