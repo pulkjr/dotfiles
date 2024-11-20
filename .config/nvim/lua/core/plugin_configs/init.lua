@@ -1,0 +1,8 @@
+require("core.plugin_configs.onedark")
+require("core.plugin_configs.treesitter")
+require("core.plugin_configs.ufo")
+require("core.plugin_configs.lsp")
+require("core.plugin_configs.telescope")
+require("core.plugin_configs.fugative")
+require("core.plugin_configs.harpoon")
+require("core.plugin_configs.gitsigns")
