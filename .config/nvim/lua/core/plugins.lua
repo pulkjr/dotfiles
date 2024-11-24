@@ -27,6 +27,16 @@ require("lazy").setup({
         branch = "harpoon2",
         dependencies = { "nvim-lua/plenary.nvim" },
     },
+    -- Lint
+    -- {
+    --     "mfussenegger/nvim-lint",
+    --     event = { "BufReadPre", "BufNewFile" },
+    -- },
+    --Formatters
+    {
+        'stevearc/conform.nvim',
+        event = { "BufReadPre", "BufNewFile" },
+    },
     --learning vim
     "theprimeagen/vim-be-good",
     --telescope Fuzzy Finder
@@ -52,10 +62,13 @@ require("lazy").setup({
             { 'nvim-telescope/telescope-ui-select.nvim' },
 
             -- Useful for getting pretty icons, but requires a Nerd Font.
-            { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
+            { 'nvim-tree/nvim-web-devicons',            enabled = vim.g.have_nerd_font },
         },
     },
+    --git
     "tpope/vim-fugitive",
     'lewis6991/gitsigns.nvim',
-    {'kevinhwang91/nvim-ufo', dependencies = 'kevinhwang91/promise-async'}
+    { 'kevinhwang91/nvim-ufo', dependencies = 'kevinhwang91/promise-async' },
+    --note
+    'zk-org/zk-nvim'
 })

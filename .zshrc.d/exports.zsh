@@ -15,3 +15,6 @@ export EDITOR='nvim'
 
 # Set the default viewer for midnight commander
 export VIEWER='bat'
+
+# Location of my zettlekasten notes
+export ZK_NOTEBOOK_DIR='/Users/jpulk/git/Personal/dailyZK'

@@ -6,6 +6,8 @@ local capabilities = vim.tbl_deep_extend(
     vim.lsp.protocol.make_client_capabilities(),
     cmp_lsp.default_capabilities())
 
+local lspconfig = require('lspconfig')
+
 require('fidget').setup({})
 require('mason').setup()
 require('mason-lspconfig').setup({
@@ -30,7 +32,8 @@ require('mason-lspconfig').setup({
     }
 })
 
-require("lspconfig").lua_ls.setup {
+-- LUA ----------------------------------------------------------------
+lspconfig.lua_ls.setup {
   settings = {
     Lua = {
       diagnostics = {
@@ -46,7 +49,8 @@ require("lspconfig").lua_ls.setup {
   }
 }
 
-require('lspconfig').ansiblels.setup {
+-- Ansible ------------------------------------------------------------
+lspconfig.ansiblels.setup {
     ansible = {
         ansible = {
             path = "ansible"
@@ -67,8 +71,34 @@ require('lspconfig').ansiblels.setup {
     }
 }
 
-require('lspconfig').marksman.setup {}
+-- Mardown ------------------------------------------------------------
+local configs = require('lspconfig/configs')
+configs.zk = {
+    default_config = {
+        cmd = {'zk', 'lsp'},
+        filetypes = {'markdown'},
+        root_dir = function()
+            lspconfig.util.root_pattern('.zk')
+            -- return vim.loop.cwd()
+        end,
+        settings = {}
+    };
+}
 
+lspconfig.zk.setup({
+    on_attach = function(client, bufnr)
+        -- Key mappings
+        local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
+        local opts = { noremap=true, silent=true }
+        buf_set_keymap("n", "<CR>", "<cmd>lua vim.lsp.buf.definition()<CR>", opts)
+        buf_set_keymap("n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>", opts)
+        buf_set_keymap("n", "<leader>zi", ":ZkIndex<CR>", opts)
+        buf_set_keymap("v", "<leader>zn", ":'<,'>lua vim.lsp.buf.range_code_action()<CR>", opts)
+        buf_set_keymap("n", "<leader>zn", ":ZkNew {title = vim.fn.input('Title: ')}<CR>", opts)
+        buf_set_keymap("n", "<leader>zl", ":ZkNew {dir = 'log'}<CR>", opts)
+
+    end
+})  -- Add keybindings here, see https://github.com/neovim/nvim-lspconfig#keybindings-and-completion
 local cmp_select = { behavior = cmp.SelectBehavior.Replace }
 
 cmp.setup({
@@ -100,6 +130,7 @@ cmp.setup({
         },
     },
 })
+
 
 vim.diagnostic.config({
     float = {
