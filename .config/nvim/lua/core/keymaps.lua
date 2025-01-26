@@ -51,19 +51,6 @@ vim.api.nvim_set_keymap(
     { noremap = true, silent = false }
 )
 
--- Todo
-k.set("n", "]t", function()
-    require("todo-comments").jump_next()
-end, { desc = "Next todo comment" })
-
-k.set("n", "[t", function()
-    require("todo-comments").jump_prev()
-end, { desc = "Previous todo comment" })
-
-k.set("n", "<leader>st", function()
-    vim.cmd(string.format("TodoTelescope cwd=%1", zkPath))
-end, { desc = "Find Search Todo Items in Zk" })
-
 k.set("n", "<leader>t", function()
     local monthNotePath = string.format("%s/journal/todo/%s", zkPath, os.date("%Y-%m.md"))
     local lastMonthPath =
@@ -77,7 +64,21 @@ k.set("n", "<leader>t", function()
     else
         print("Previous File missing: " .. lastMonthPath)
     end
-end, { desc = "Open todays Zk" })
+end, { desc = "Open [T]odays Zk" })
+
+k.set("n", "<leader>st", function()
+    vim.cmd(string.format("TodoTelescope cwd=%1", zkPath))
+end, { desc = "Find [S]earch [T]odo Items in Zk" })
+
+-- Todo
+k.set("n", "]t", function()
+    require("todo-comments").jump_next()
+end, { desc = "Next todo comment" })
+
+k.set("n", "[t", function()
+    require("todo-comments").jump_prev()
+end, { desc = "Previous todo comment" })
+
 -- Formatting
 k.set({ "n", "v" }, "<leader>f", function()
     require("conform").format({
@@ -87,7 +88,13 @@ k.set({ "n", "v" }, "<leader>f", function()
     })
 end, { desc = "Format file or range (in visual mode)" })
 
+k.set("n", "<M-z>", function()
+    if vim.opt.wrap then
+        vim.opt.wrap = false
+    else
+        vim.opt.wrap = true
+    end
+end, { desc = "Enable word wrap" })
+
 --LSP
-k.set("n", "<leader>r", function()
-    vim.lsp.buf.rename()
-end, { desc = "Rename the ficture under cursour" })
+k.set("n", "<leader>r", vim.lsp.buf.rename, { desc = "Rename the ficture under cursour" })

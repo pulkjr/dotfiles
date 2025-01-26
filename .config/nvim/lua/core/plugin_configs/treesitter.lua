@@ -1,15 +1,17 @@
-require('nvim-treesitter.configs').setup({
+require("nvim-treesitter.configs").setup({
 
     ensure_installed = {
-        'lua',
-        'luadoc',
-        'bash',
-        'diff',
-        'html',
-        'markdown',
-        'markdown_inline',
-        'vim',
-        'vimdoc'
+        "lua",
+        "luadoc",
+        "bash",
+        "diff",
+        "html",
+        "markdown",
+        "markdown_inline",
+        "rust",
+        "toml",
+        "vim",
+        "vimdoc",
     },
 
     sync_install = false,
@@ -17,7 +19,7 @@ require('nvim-treesitter.configs').setup({
     auto_install = true,
 
     indent = {
-        enable = true
+        enable = true,
     },
 
     highlight = {
@@ -27,11 +29,11 @@ require('nvim-treesitter.configs').setup({
     },
 })
 
-local treesitter_parser_config = require('nvim-treesitter.parsers').get_parser_configs()
+local treesitter_parser_config = require("nvim-treesitter.parsers").get_parser_configs()
 treesitter_parser_config.powershell = {
     install_info = {
         url = "~/.config/nvim/tree-sitter-parsers/tree-sitter-powershell",
-        files = { "src/parser.c", "src/scanner.c"},
+        files = { "src/parser.c", "src/scanner.c" },
         branch = "main",
         generate_requires_npm = false,
         requires_generate_from_grammar = false,

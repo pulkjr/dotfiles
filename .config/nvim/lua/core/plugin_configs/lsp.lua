@@ -7,26 +7,24 @@ local lspconfig = require("lspconfig")
 
 local on_attach = function(client, bufnr)
     -- Key mappings
-    local function buf_set_keymap(...)
-        vim.api.nvim_buf_set_keymap(bufnr, ...)
-    end
+    local k = vim.keymap
 
     local opts = { noremap = true, silent = true }
-    buf_set_keymap("n", "gD", "<cmd>Telescope lsp_type_definitions<CR>", opts)
-    buf_set_keymap("n", "gd", "<cmd>Telescope lsp_definitions<CR>", opts)
-    buf_set_keymap("n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>", opts)
-    buf_set_keymap("n", "gh", "<cmd>lua vim.lsp.buf.signature_help()<CR>", opts)
-    buf_set_keymap("n", "gi", "<cmd>Telescope lsp_implementations<CR>", opts)
-    buf_set_keymap("n", "gr", "<cmd>Telescope lsp_references<CR>", opts)
-    buf_set_keymap("n", "[d", "<cmd>lua vim.diagnostic.goto_prev()<CR>", opts)
-    buf_set_keymap("n", "]d", "<cmd>lua vim.diagnostic.goto_next()<CR>", opts)
+    k.set("n", "gD", "<cmd>Telescope lsp_type_definitions<CR>", opts)
+    k.set("n", "gd", "<cmd>Telescope lsp_definitions<CR>", opts)
+    k.set("n", "gn", vim.lsp.buf.rename, opts)
+    k.set("n", "K", vim.lsp.buf.hover, opts)
+    k.set("n", "gh", vim.lsp.buf.signature_help, opts)
+    k.set("n", "gi", "<cmd>Telescope lsp_implementationsj>", opts)
+    k.set("n", "gr", vim.lsp.buf.references, opts)
+    k.set("n", "[d", vim.diagnostic.goto_prev, opts)
+    k.set("n", "]d", vim.diagnostic.goto_next, opts)
     vim.keymap.set("n", "<space>wa", vim.lsp.buf.add_workspace_folder, opts)
     vim.keymap.set("n", "<space>wr", vim.lsp.buf.remove_workspace_folder, opts)
     vim.keymap.set("n", "<space>wl", function()
         print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
     end, opts)
-    -- buf_set_keymap("n", "<leader>ll", "<cmd>lua vim.lsp.codelens.run()<cr>", opts)
-    -- buf_set_keymap("n", "<leader>lR", "<cmd>lua vim.lsp.buf.rename()<cr>", opts)
+    k.set("n", "<leader>r", vim.lsp.buf.rename, opts)
 end
 
 require("fidget").setup({})
@@ -44,11 +42,22 @@ require("mason-lspconfig").setup({
             local lspconfig = require("lspconfig")
             lspconfig.powershell_es.setup({
                 bundle_path = "~/.local/share/nvim/PowerShellEditorServices",
-                on_attach = on_attach_ps,
+                on_attach = on_attach,
                 init_options = {
                     enableProfileLoading = false,
                 },
-                settings = { powershell = { codeFormatting = { Preset = "OTBS" } } },
+                -- Found these setting on: https://github.com/PowerShell/PowerShellEditorServices/blob/main/src/PowerShellEditorServices/Services/Workspace/LanguageServerSettings.cs#L168
+                settings = {
+                    powershell = {
+                        codeFormatting = {
+                            Preset = "Allman",
+                            -- AddWhitespaceAroundPipe = true,
+                            -- AvoidSemicolonsAsLineTerminators = true,
+                            UseCorrectCasing = true,
+                            -- AlignPropertyValuePairs = true,
+                        },
+                    },
+                },
             })
         end,
     },
@@ -138,15 +147,41 @@ cmp.setup({
     mapping = cmp.mapping.preset.insert({
         ["<C-p>"] = cmp.mapping(cmp.mapping.select_prev_item(cmp_select), { "i" }),
         ["<C-n>"] = cmp.mapping(cmp.mapping.select_next_item(cmp_select), { "i" }),
-        ["<C-y>"] = cmp.mapping.confirm({ select = true }),
+        ["<C-S-f>"] = cmp.mapping.scroll_docs(-4),
+        ["<C-f>"] = cmp.mapping.scroll_docs(4),
+        ["<C-e>"] = cmp.mapping.close(),
+        ["<C-l>"] = cmp.mapping.confirm({
+            behavior = cmp.ConfirmBehavior.Insert,
+            select = true,
+        }),
         ["<C-Space>"] = cmp.mapping.complete(),
     }),
     sources = cmp.config.sources({
-        { name = "nvim_lsp" },
-        { name = "luasnip" },
-    }, {
-        { name = "buffer" },
+        { name = "path" }, -- file paths
+        { name = "nvim_lsp", keyword_length = 3 }, -- from language server
+        { name = "nvim_lsp_signature_help" }, -- display function signatures with current parameter emphasized
+        { name = "nvim_lua", keyword_length = 2 }, -- complete neovim's Lua runtime API such vim.lsp.*
+        { name = "buffer", keyword_length = 2 }, -- source current buffer
+        { name = "vsnip", keyword_length = 2 }, -- nvim-cmp source for vim-vsnip
+        { name = "calc" }, -- source for math calculation,
     }),
+    window = {
+        completion = cmp.config.window.bordered(),
+        documentation = cmp.config.window.bordered(),
+    },
+    formatting = {
+        fields = { "menu", "abbr", "kind" },
+        format = function(entry, item)
+            local menu_icon = {
+                nvim_lsp = "λ",
+                vsnip = "⋗",
+                buffer = "Ω",
+                path = "🖫",
+            }
+            item.menu = menu_icon[entry.source.name]
+            return item
+        end,
+    },
     opts = {
         capabilities = {
             textDocument = {
