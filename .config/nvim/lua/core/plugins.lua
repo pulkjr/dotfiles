@@ -28,6 +28,14 @@ require("lazy").setup({
         branch = "harpoon2",
         dependencies = { "nvim-lua/plenary.nvim" },
     },
+    -- Debugger
+    "mfussenegger/nvim-dap",
+    -- Need to troubleshoot this. It isn't working right now.
+    -- {
+    --     "mrcjkb/rustaceanvim",
+    --     version = "^5", -- Recommended
+    --     lazy = false, -- This plugin is already lazy
+    -- },
     -- Lint
     -- {
     --     "mfussenegger/nvim-lint",
@@ -38,6 +46,7 @@ require("lazy").setup({
         "stevearc/conform.nvim",
         event = { "BufReadPre", "BufNewFile" },
     },
+    "Kicamon/markdown-table-mode.nvim",
     --learning vim
     "theprimeagen/vim-be-good",
     --telescope Fuzzy Finder
@@ -78,4 +87,33 @@ require("lazy").setup({
         config = true,
     },
     "mg979/vim-visual-multi",
+    "nvimdev/lspsaga.nvim",
+    -- Markdown ---------------------------------------------
+    "jghauser/follow-md-links.nvim",
+}, {
+    ui = { border = "rounded" },
+    install = {
+        -- Do not automatically install on startup.
+        missing = false,
+    },
+    -- Don't bother me when tweaking plugins.
+    change_detection = { notify = false },
+    -- None of my plugins use luarocks so disable this.
+    rocks = {
+        enabled = false,
+    },
+    performance = {
+        rtp = {
+            -- Stuff I don't use.
+            disabled_plugins = {
+                "gzip",
+                -- "netrwPlugin",
+                "rplugin",
+                "tarPlugin",
+                "tohtml",
+                "tutor",
+                "zipPlugin",
+            },
+        },
+    },
 })

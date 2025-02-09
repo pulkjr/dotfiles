@@ -21,6 +21,7 @@ local k = vim.keymap
 local zkPath = vim.fn.expand("$HOME/git/Personal/dailyZK")
 --Open ntrw
 k.set("n", "<leader>pv", vim.cmd.Ex)
+k.set("n", "-", vim.cmd.Ex)
 
 -- Yank to system clipboard
 k.set("v", "<leader>y", '"*y', { desc = "Yank to System Clipboard" })
@@ -98,3 +99,6 @@ end, { desc = "Enable word wrap" })
 
 --LSP
 k.set("n", "<leader>r", vim.lsp.buf.rename, { desc = "Rename the ficture under cursour" })
+
+--LSPSaga
+k.set("n", "<leader>o", ":Lspsaga outline<CR>", { desc = "Open the outline for the given file" })
