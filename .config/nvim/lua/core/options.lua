@@ -22,7 +22,7 @@ opt.number = true -- Make line numbers default
 opt.relativenumber = false -- Turning off relativenumbering as I'm not using it
 opt.termguicolors = true
 opt.colorcolumn = "100"
-opt.signcolumn = "yes"
+opt.signcolumn = "no" -- Disable the left gutter
 opt.cmdheight = 1
 opt.scrolloff = 15 -- Minimal number of screen lines to keep above and below the cursor.
 opt.completeopt = "menuone,noinsert,noselect"
@@ -32,6 +32,7 @@ opt.breakindent = true -- Wrapped lines are indented
 opt.list = true -- Sets how neovim will display certain whitespace characters in the editor.
 opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 opt.cursorline = true -- highlight the line you are on.
+opt.foldlevel = 99 -- Set fold depth to 99
 
 -- FUNCTIONALITY ----------------------------------------------------------------
 opt.undofile = true -- Save undo history

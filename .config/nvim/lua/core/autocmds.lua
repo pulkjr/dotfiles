@@ -1,19 +1,35 @@
 -- Remove spaces at the end of a line
 vim.api.nvim_create_autocmd({ "BufWritePre" }, {
-    pattern = {"*"},
+    pattern = { "*" },
     callback = function()
-      local save_cursor = vim.fn.getpos(".")
-      pcall(function() vim.cmd [[%s/\s\+$//e]] end)
-      vim.fn.setpos(".", save_cursor)
+        local save_cursor = vim.fn.getpos(".")
+        pcall(function()
+            vim.cmd([[%s/\s\+$//e]])
+        end)
+        vim.fn.setpos(".", save_cursor)
     end,
 })
 
 -- Highlight when yanking (copying) text
 --  See `:help vim.highlight.on_yank()`
-vim.api.nvim_create_autocmd('TextYankPost', {
-  desc = 'Highlight when yanking (copying) text',
-  group = vim.api.nvim_create_augroup('highlight-yank', { clear = true }),
-  callback = function()
-    vim.highlight.on_yank()
-  end,
+vim.api.nvim_create_autocmd("TextYankPost", {
+    desc = "Highlight when yanking (copying) text",
+    group = vim.api.nvim_create_augroup("highlight-yank", { clear = true }),
+    callback = function()
+        vim.highlight.on_yank()
+    end,
+})
+
+-- Folds ------------------------------------------------------------------------------------------
+--
+-- Enable folds if there is a treesitter for this filetype
+vim.api.nvim_create_autocmd({ "FileType" }, {
+    callback = function()
+        if require("nvim-treesitter.parsers").has_parser() then
+            vim.opt.foldmethod = "expr"
+            vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
+        else
+            vim.opt.foldmethod = "syntax"
+        end
+    end,
 })

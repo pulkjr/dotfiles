@@ -23,6 +23,8 @@ mason_tool_installer.setup({
         "jsonlint",
         "lua-language-server",
         "markdownlint",
+        "markdownlint-cli2",
+        "markdown-toc",
         "prettier", -- prettier formatter
         "pylint", -- python linter
         "rust-analyzer",

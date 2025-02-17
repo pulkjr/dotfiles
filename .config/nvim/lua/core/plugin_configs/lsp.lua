@@ -30,7 +30,9 @@ end
 require("fidget").setup({})
 require("mason").setup()
 require("mason-lspconfig").setup({
-    ensure_installed = {},
+    ensure_installed = {
+        "marksman",
+    },
     handlers = {
         function(server_name)
             require("lspconfig")[server_name].setup({
@@ -108,6 +110,8 @@ lspconfig.ansiblels.setup({
 })
 
 -- Mardown ------------------------------------------------------------
+lspconfig.marksman.setup({})
+
 local configs = require("lspconfig/configs")
 configs.zk = {
     default_config = {

@@ -1,15 +1,8 @@
 -- local currDir = vim.fn.expand('%:p')
 -- local pattern = 'dailyZK'
 
-vim.keymap.set("n", "<leader>td", function()
-    local curr_line = vim.api.nvim__buf_stats(0).current_lnum
-    print(curr_line)
-end, { desc = "Close the current TODO under cursor" })
-
-vim.keymap.set("i", "<C-b>", function()
-    vim.cmd("normal viwsa*")
-    vim.cmd("normal viwsa*")
-end, { desc = "Bold" })
+vim.opt.spell = true
+vim.opt.spelllang = "en_us"
 
 -- Add the key mappings only for Markdown files in a zk notebook.
 if require("zk.util").notebook_root(vim.fn.expand("%:p")) ~= nil then
@@ -46,3 +39,24 @@ if require("zk.util").notebook_root(vim.fn.expand("%:p")) ~= nil then
     -- Open the code actions for a visual selection.
     map("v", "<leader>za", ":'<,'>lua vim.lsp.buf.range_code_action()<CR>", opts)
 end
+
+-- COLORS ----------------------------------------------------------------------------------------
+
+local color_fg = "#0D1116"
+local color_bg1 = "#987afb"
+local color_bg2 = "#37f499"
+local color_bg3 = "#04d1f9"
+local color_bg4 = "#949ae5"
+
+vim.cmd(
+    string.format([[highlight @markup.heading.1.markdown cterm=bold gui=bold guifg=%s guibg=%s]], color_fg, color_bg1)
+)
+vim.cmd(
+    string.format([[highlight @markup.heading.2.markdown cterm=bold gui=bold guifg=%s guibg=%s]], color_fg, color_bg2)
+)
+vim.cmd(
+    string.format([[highlight @markup.heading.3.markdown cterm=bold gui=bold guifg=%s guibg=%s]], color_fg, color_bg3)
+)
+vim.cmd(
+    string.format([[highlight @markup.heading.4.markdown cterm=bold gui=bold guifg=%s guibg=%s]], color_fg, color_bg4)
+)
