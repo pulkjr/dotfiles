@@ -10,7 +10,7 @@ alias top='htop'
 alias man='batman'
 
 # ll will open a preview of the files
-#alias ll="fzf --preview 'bat --color \"always\" --style=numbers --line-range=:500 {}'"
+alias ll="fzf --preview 'bat --color \"always\" --style=numbers --line-range=:500 {}' --preview-window=70%,border-double,top"
 
 # ncdu > du
 # --color dark - use a colour scheme
