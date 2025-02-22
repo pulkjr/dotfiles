@@ -13,10 +13,12 @@ require("lazy").setup(
         },
         { "echasnovski/mini.nvim", version = "*" },
 
-        -- LSP Plugins -------------------------------------------
+        -- LSP PLUGINS ----------------------------------------------------------------------------
         "neovim/nvim-lspconfig",
         "williamboman/mason.nvim",
         "williamboman/mason-lspconfig.nvim",
+
+        -- SNIPPETS -------------------------------------------------------------------------------
         "hrsh7th/cmp-nvim-lsp",
         "hrsh7th/cmp-buffer",
         "hrsh7th/cmp-path",
@@ -24,14 +26,9 @@ require("lazy").setup(
         "hrsh7th/nvim-cmp",
         "L3MON4D3/LuaSnip",
         "saadparwaiz1/cmp_luasnip",
-        "j-hui/fidget.nvim",
-        {
-            "theprimeagen/harpoon",
-            branch = "harpoon2",
-            dependencies = { "nvim-lua/plenary.nvim" },
-        },
+        "rafamadriz/friendly-snippets",
 
-        -- Debugger
+        -- DEBUGGER -------------------------------------------------------------------------------
         "mfussenegger/nvim-dap",
         -- Need to troubleshoot this. It isn't working right now.
         -- {
@@ -45,24 +42,11 @@ require("lazy").setup(
         --     event = { "BufReadPre", "BufNewFile" },
         -- },
 
-        --Formatters
+        -- LINTING --------------------------------------------------------------------------------
         {
             "stevearc/conform.nvim",
             event = { "BufReadPre", "BufNewFile" },
         },
-        "norcalli/nvim-colorizer.lua", -- Show the color of a hex value in CSS and HTML
-        -- Makes working with Markdown Tables better
-        "Kicamon/markdown-table-mode.nvim",
-        -- Renders markdown nicely
-        {
-            "MeanderingProgrammer/render-markdown.nvim",
-            enabled = true,
-            dependencies = { "nvim-treesitter/nvim-treesitter", "echasnovski/mini.nvim" }, -- if you use the mini.nvim suite
-            -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.icons' }, -- if you use standalone mini plugins
-            -- dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" }, -- if you prefer nvim-web-devicons
-        },
-        --learning vim
-        "theprimeagen/vim-be-good",
 
         --telescope Fuzzy Finder
         {
@@ -71,7 +55,8 @@ require("lazy").setup(
             branch = "0.1.x",
             dependencies = {
                 "nvim-lua/plenary.nvim",
-                { -- If encountering errors, see telescope-fzf-native README for installation instructions
+                {
+                    -- If encountering errors, see telescope-fzf-native README for installation instructions
                     "nvim-telescope/telescope-fzf-native.nvim",
 
                     -- `build` is used to run some command when the plugin is installed/updated.
@@ -91,26 +76,52 @@ require("lazy").setup(
             },
         },
 
-        --git
+        -- NAVIGATION -----------------------------------------------------------------------------
+        -- Working with multiple cursors
+        "mg979/vim-visual-multi",
+
+        -- Navigating to different files within a project
+        {
+            "theprimeagen/harpoon",
+            branch = "harpoon2",
+            dependencies = { "nvim-lua/plenary.nvim" },
+        },
+
+        -- GIT ------------------------------------------------------------------------------------
         "tpope/vim-fugitive",
         "lewis6991/gitsigns.nvim",
 
-        --note
+        -- NOTE -----------------------------------------------------------------------------------
         "zk-org/zk-nvim",
 
-        -- Look and feel
+        -- lOOK AND FEEL --------------------------------------------------------------------------
         {
             "windwp/nvim-autopairs",
             event = "InsertEnter",
             config = true,
         },
-        "mg979/vim-visual-multi",
+
+        -- Progress UI in the bottom right
+        "j-hui/fidget.nvim",
+
+        -- Breadcruoms from the LSP
         "nvimdev/lspsaga.nvim",
 
-        -- Markdown ---------------------------------------------
+        -- Show the color of a hex value in CSS and HTML
+        "norcalli/nvim-colorizer.lua",
+
+        -- MARKDOWN -------------------------------------------------------------------------------
         "jghauser/follow-md-links.nvim",
+        -- Makes working with Markdown Tables better
+        "Kicamon/markdown-table-mode.nvim",
+        -- Renders markdown nicely
+        {
+            "MeanderingProgrammer/render-markdown.nvim",
+            enabled = true,
+            dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" },
+        },
     },
-    -- Lazy Configuration -----------------------------------
+    -- LAZY CONFIGURATION -------------------------------------------------------------------------
     {
         ui = { border = "rounded" },
         install = {

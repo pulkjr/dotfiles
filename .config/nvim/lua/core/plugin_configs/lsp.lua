@@ -51,12 +51,16 @@ require("mason-lspconfig").setup({
                 -- Found these setting on: https://github.com/PowerShell/PowerShellEditorServices/blob/main/src/PowerShellEditorServices/Services/Workspace/LanguageServerSettings.cs#L168
                 settings = {
                     powershell = {
+                        scriptAnalysis = {
+                            enable = true,
+                        },
                         codeFormatting = {
                             Preset = "Allman",
-                            -- AddWhitespaceAroundPipe = true,
-                            -- AvoidSemicolonsAsLineTerminators = true,
-                            UseCorrectCasing = true,
-                            -- AlignPropertyValuePairs = true,
+                            openBraceOnSameLine = false,
+                            addWhitespaceAroundPipe = true,
+                            useCorrectCasing = true,
+                            alignPropertyValuePairs = true,
+                            useConstantStrings = true,
                         },
                     },
                 },
