@@ -31,3 +31,7 @@ podman
 RedHat
 Dev
 repo
+SCOM
+SSMS
+MSSQLSERVER
+failover
