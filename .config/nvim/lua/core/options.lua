@@ -3,25 +3,25 @@ local opt = vim.opt
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = true
 
--- TAB/INDENT ----------------------------------------------------------------
-opt.tabstop = 4
-opt.shiftwidth = 4
-opt.softtabstop = 4
-opt.expandtab = true
-opt.smartindent = true
-opt.wrap = false
+-- INDENTATION & FORMATTING --------------------------------------------------
+vim.opt.tabstop = 4 -- Sets the width of a tab character (4 spaces)
+vim.opt.shiftwidth = 4 -- Defines indentation width when using '>>' or '<<' commands (4 spaces)
+vim.opt.softtabstop = 4 -- Controls the number of spaces inserted when pressing Tab (4 spaces)
+vim.opt.expandtab = true -- Converts tabs into spaces when pressing Tab
+vim.opt.smartindent = true -- Enables smart auto-indentation based on syntax rules
+vim.opt.wrap = false -- Disables line wrapping; lines continue horizontally without breaking
 
 -- SEARCH --------------------------------------------------------------------
-opt.incsearch = true
-opt.ignorecase = true
-opt.smartcase = true
-opt.hlsearch = false
+vim.opt.incsearch = true -- Enables incremental search (highlights matches as you type)
+vim.opt.ignorecase = true -- Makes search case-insensitive
+vim.opt.smartcase = true -- Overrides 'ignorecase' if uppercase letters are used in the search
+vim.opt.hlsearch = false -- Disables search result highlighting after the search is done
 
 -- APPEARANCE ----------------------------------------------------------------
 opt.number = true -- Make line numbers default
 opt.relativenumber = false -- Turning off relativenumbering as I'm not using it
 opt.termguicolors = true
-opt.colorcolumn = "100"
+opt.colorcolumn = "100" -- Highlights column 100
 opt.signcolumn = "no" -- Disable the left gutter
 opt.cmdheight = 1
 opt.scrolloff = 15 -- Minimal number of screen lines to keep above and below the cursor.
@@ -43,6 +43,7 @@ opt.inccommand = "split" -- Preview substitutions live, as you type
 -- NETRW ---------------------------------------------------------------------
 
 vim.g.netrw_banner = 0 -- Remove the top banner
+vim.g.netrw_hide = 1 -- hide the . and .. in netrw
 
 -- Update the list stype
 -- 0: Thin, one file per line
@@ -64,3 +65,6 @@ vim.filetype.add({
         ["JenkinsSync"] = "groovy",
     },
 })
+
+-- LOOK & FEEL ---------------------------------------------------------------
+vim.cmd([[highlight CursorLine guibg=#101010 guifg=NONE]]) -- Change background color

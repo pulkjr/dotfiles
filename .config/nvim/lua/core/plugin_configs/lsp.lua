@@ -10,7 +10,7 @@ local on_attach = function(client, bufnr)
     local k = vim.keymap
 
     -- Disable LSP Token highlight. Need to figure out how to only do this for PowerShell
-    client.server_capabilities.semanticTokensProvider = nil
+    -- client.server_capabilities.semanticTokensProvider = nil
 
     local opts = { noremap = true, silent = true, buffer = bufnr }
 
@@ -75,6 +75,11 @@ require("mason-lspconfig").setup({
     },
 })
 
+-- AI -----------------------------------------------------------------
+vim.g.sg_cody_path = vim.fn.expand("~/.cargo/bin/cody")
+require("sg").setup({
+    on_attach = on_attach,
+})
 -- LUA ----------------------------------------------------------------
 lspconfig.lua_ls.setup({
     on_attach = on_attach,
@@ -171,11 +176,12 @@ cmp.setup({
         ["<C-Space>"] = cmp.mapping.complete(),
     }),
     sources = cmp.config.sources({
-        { name = "path" }, -- file paths
         { name = "nvim_lsp", keyword_length = 3 }, -- from language server
+        { name = "buffer", keyword_length = 2 }, -- source current buffer
+        { name = "path" }, -- file paths
+        { name = "luasnip" }, -- file paths
         { name = "nvim_lsp_signature_help" }, -- display function signatures with current parameter emphasized
         { name = "nvim_lua", keyword_length = 2 }, -- complete neovim's Lua runtime API such vim.lsp.*
-        { name = "buffer", keyword_length = 2 }, -- source current buffer
         { name = "vsnip", keyword_length = 2 }, -- nvim-cmp source for vim-vsnip
         { name = "calc" }, -- source for math calculation,
     }),

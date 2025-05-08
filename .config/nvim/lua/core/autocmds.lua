@@ -33,3 +33,17 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
         end
     end,
 })
+
+-- Powershell -------------------------------------------------------------------------------------
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "ps1",
+    callback = function()
+        vim.keymap.set("n", "<leader>r", function()
+            local word = vim.fn.expand("<cword>")
+            local replacement = vim.fn.input("Replace " .. word .. " with: ")
+            if replacement ~= "" then
+                vim.cmd(":%s/" .. word .. "/" .. replacement .. "/gc")
+            end
+        end, { buffer = true }) -- `buffer = true` ensures it applies only to the current file
+    end,
+})

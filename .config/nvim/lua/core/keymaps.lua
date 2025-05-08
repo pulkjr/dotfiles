@@ -61,3 +61,16 @@ k.set("n", "<leader>r", vim.lsp.buf.rename, { desc = "Rename the ficture under c
 
 --LSPSaga
 k.set("n", "<leader>o", ":Lspsaga outline<CR>", { desc = "Open the outline for the given file" })
+
+-- Snippets----------------------------------------
+vim.keymap.set({ "i", "s" }, "<Tab>", function()
+    if require("luasnip").expand_or_jumpable() then
+        require("luasnip").expand_or_jump()
+    end
+end, { silent = true, desc = "Jump to the next STOP in the snippet" })
+
+vim.keymap.set({ "i", "s" }, "<S-Tab>", function()
+    if require("luasnip").jumpable(-1) then
+        require("luasnip").jump(-1)
+    end
+end, { silent = true, desc = "Jump bach the the previous STOP in the snippet" })

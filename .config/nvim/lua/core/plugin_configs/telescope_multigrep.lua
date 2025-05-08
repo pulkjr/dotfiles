@@ -1,14 +1,19 @@
-local pickers = require("telescope.pickers")
 local finders = require("telescope.finders")
 local make_entry = require("telescope.make_entry")
+local pickers = require("telescope.pickers")
 local conf = require("telescope.config").values
 
 local M = {}
 
 local live_multigrep = function(opts)
     opts = opts or {}
-    vim.cmd(":Gcd")
-    -- opts.cwd = opts.cwd or vim.uv.cwd()
+
+    -- Use current working directory instead of relying on Git
+    local git_ok, _ = pcall(vim.cmd, ":Gcd")
+
+    if not git_ok then
+        opts.cwd = vim.fn.getcwd() -- Use current directory if Git fails
+    end
 
     local finder = finders.new_async_job({
         command_generator = function(prompt)
@@ -34,7 +39,7 @@ local live_multigrep = function(opts)
             })
         end,
         entry_maker = make_entry.gen_from_vimgrep(opts),
-        cwd = opts.cwd,
+        cwd = opts.cwd or vim.fn.getcwd(), -- Ensure search runs in current dir
     })
     pickers
         .new(opts, {
