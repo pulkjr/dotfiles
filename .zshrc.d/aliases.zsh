@@ -25,3 +25,6 @@ alias vim="nvim"
 
 # Command to manage dotfiles with git
 alias config='git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+
+# SourceGraph
+alias code="NODE_TLS_REJECT_UNAUTHORIZED=0 code"
