@@ -38,54 +38,46 @@ require("mason").setup()
 require("mason-lspconfig").setup({
     ensure_installed = {
         "marksman",
-    },
-    handlers = {
-        function(server_name)
-            require("lspconfig")[server_name].setup({
-                capabilities = capabilities,
-            })
-        end,
-
-        powershell_es = function()
-            local lspconfig = require("lspconfig")
-            lspconfig.powershell_es.setup({
-                bundle_path = "~/.local/share/nvim/PowerShellEditorServices",
-                on_attach = on_attach,
-                init_options = {
-                    enableProfileLoading = false,
-                },
-                -- Found these setting on: https://github.com/PowerShell/PowerShellEditorServices/blob/main/src/PowerShellEditorServices/Services/Workspace/LanguageServerSettings.cs#L168
-                settings = {
-                    powershell = {
-                        scriptAnalysis = {
-                            enable = true,
-                        },
-                        codeFormatting = {
-                            Preset = "Allman",
-                            openBraceOnSameLine = false,
-                            addWhitespaceAroundPipe = true,
-                            useCorrectCasing = true,
-                            alignPropertyValuePairs = true,
-                            useConstantStrings = true,
-                        },
-                    },
-                },
-            })
-        end,
+        "lua_ls",
     },
 })
 
--- AI -----------------------------------------------------------------
-vim.g.sg_cody_path = vim.fn.expand("~/.cargo/bin/cody")
-require("sg").setup({
+-- PowerShell ------------------------------------------------------------
+vim.lsp.config.powershell_es = {
+    bundle_path = "~/.local/share/nvim/PowerShellEditorServices",
     on_attach = on_attach,
-})
+    init_options = {
+        enableProfileLoading = false,
+    },
+    -- Found these setting on: https://github.com/PowerShell/PowerShellEditorServices/blob/main/src/PowerShellEditorServices/Services/Workspace/LanguageServerSettings.cs#L168
+    settings = {
+        powershell = {
+            scriptAnalysis = {
+                enable = true, -- Enables ScriptAnalysis
+                settingsPath = "~/.config/powershell/MyPSScriptAnalyzerRules.psd1",
+            },
+            codeFormatting = {
+                Preset = "Allman",
+                openBraceOnSameLine = false,
+                addWhitespaceAroundPipe = true,
+                useCorrectCasing = true,
+                alignPropertyValuePairs = true,
+                useConstantStrings = true,
+            },
+        },
+    },
+    float = { border = "rounded" },
+}
+vim.lsp.enable("powershell_es")
 -- LUA ----------------------------------------------------------------
-lspconfig.lua_ls.setup({
+vim.lsp.config.lua_ls = {
     on_attach = on_attach,
     capabilities = capabilities,
     settings = {
         Lua = {
+            runtime = {
+                version = "LuaJIT", -- Neovim uses LuaJIT
+            },
             diagnostics = {
                 globals = { "vim" },
             },
@@ -100,10 +92,35 @@ lspconfig.lua_ls.setup({
             },
         },
     },
+}
+vim.lsp.enable("lua_ls")
+
+-- C Sharp ----------------------------------------------------------------
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "cs", -- Ensure it only applies to C# files
+    callback = function()
+        vim.lsp.start({
+            name = "omnisharp",
+            cmd = { "omnisharp" }, -- Ensure OmniSharp is installed and accessible
+            capabilities = require("cmp_nvim_lsp").default_capabilities(),
+            on_init = function(client, _)
+                print("OmniSharp LSP started!") -- Debugging
+            end,
+            settings = {
+                omnisharp = {
+                    enable_roslyn_analyzers = true,
+                    analyze_open_documents_only = false,
+                    organize_imports_on_format = true,
+                    enable_import_completion = true,
+                    exclude_project_directories = { "node_modules", "bin", "obj" },
+                },
+            },
+        })
+    end,
 })
 
 -- Ansible ------------------------------------------------------------
-lspconfig.ansiblels.setup({
+vim.lsp.config.ansiblels = {
     ansible = {
         ansible = {
             path = "ansible",
@@ -122,10 +139,12 @@ lspconfig.ansiblels.setup({
             },
         },
     },
-})
+}
+vim.lsp.enable("ansiblels")
 
 -- Mardown ------------------------------------------------------------
-lspconfig.marksman.setup({})
+vim.lsp.config.marksman = {}
+vim.lsp.enable("marksman")
 
 local configs = require("lspconfig/configs")
 configs.zk = {
@@ -214,29 +233,23 @@ cmp.setup({
     },
 })
 
--- C Sharp ----------------------------------------------------------------
-require("lspconfig").omnisharp.setup({
-    cmd = { "omnisharp" },
-    capabilities = require("cmp_nvim_lsp").default_capabilities(),
-    on_attach = on_attach,
-    settings = {
-        omnisharp = {
-            enable_roslyn_analyzers = true, -- Enables advanced C# analysis
-            analyze_open_documents_only = false, -- Analyzes all C# files, not just open ones
-            organize_imports_on_format = true, -- Cleans up unused imports
-            enable_import_completion = true, -- Auto-suggests namespaces when completing symbols
-            exclude_project_directories = { "node_modules", "bin", "obj" }, -- Excludes unnecessary folders
-        },
-    },
-})
 -- Formatting ----------------------------------------------------------------
 -- Change border of documentation hover window
-vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
-    border = "rounded",
-})
+vim.ui.open_floating_window = function(contents, opts)
+    opts.border = "rounded" -- Ensure all LSP floating windows have rounded borders
+    return vim.lsp.util.open_floating_preview(contents, opts)
+end
 
 -- Diagnostic ----------------------------------------------------------------
 vim.diagnostic.config({
+    -- Enable virtual text (inline diagnostics)
+    virtual_text = {
+        prefix = "●", -- You can change this to any icon or string you prefer
+        spacing = 4, -- Adjust the spacing between the text and the diagnostic message
+    },
+    signs = true, -- Show diagnostic signs in the sign column
+    underline = true, -- Underline the affected code
+    update_in_insert = false, -- Update diagnostics when you leave insert mode (set to true if you prefer live updates)
     float = {
         focusable = false,
         style = "minimal",
