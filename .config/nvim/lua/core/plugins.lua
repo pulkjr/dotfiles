@@ -28,14 +28,6 @@ require("lazy").setup(
         "saadparwaiz1/cmp_luasnip",
         "rafamadriz/friendly-snippets",
 
-        -- AI------ -------------------------------------------------------------------------------
-        {
-            "sourcegraph/sg.nvim",
-            dependencies = {
-                "nvim-lua/plenary.nvim",
-                -- "nvim-telescope/telescope.nvim",
-            },
-        },
         -- DEBUGGER -------------------------------------------------------------------------------
         "mfussenegger/nvim-dap",
         -- Need to troubleshoot this. It isn't working right now.
@@ -116,9 +108,6 @@ require("lazy").setup(
 
         -- Breadcruoms from the LSP
         "nvimdev/lspsaga.nvim",
-
-        -- Show the color of a hex value in CSS and HTML
-        "norcalli/nvim-colorizer.lua",
 
         -- MARKDOWN -------------------------------------------------------------------------------
         "jghauser/follow-md-links.nvim",
