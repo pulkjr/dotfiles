@@ -1,6 +1,5 @@
 require("core.plugin_configs.onedark")
 require("core.plugin_configs.treesitter")
-require("core.plugin_configs.colorizer")
 require("core.plugin_configs.lsp")
 require("core.plugin_configs.telescope")
 require("core.plugin_configs.fugative")
