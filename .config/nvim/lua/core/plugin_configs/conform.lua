@@ -18,32 +18,31 @@ conform.setup({
                 return #diag > 0
             end,
         },
+        csharpier = {
+            command = "csharpier",
+            args = { "format", "$FILENAME", "--write-stdout" },
+            stdin = true,
+        },
     },
     formatters_by_ft = {
+        cs = { "csharpier" },
         lua = { "stylua" },
         python = { "isort", "black" },
         rust = { "rustfmt", lsp_format = "fallback" },
         typescript = { "prettier" },
-        javascript = { "prettierd", "prettier", stop_after_first = true },
+        javascript = { "prettier", stop_after_first = true },
         javascriptreact = { "prettier" },
         typescriptreact = { "prettier" },
         css = { "prettier" },
         html = { "prettier" },
         json = { "prettier" },
         yaml = { "prettier" },
-        markdown = { "prettier", "markdownlint-cli2" },
+        markdown = { "prettierd", timeout_ms = 2000 },
     },
-    format_on_save = {
+    format_on_save = false,
+    format_after_save = {
         lsp_fallback = true,
         async = false,
         timeout_ms = 700,
     },
 })
-
-vim.keymap.set({ "n", "v" }, "<leader>mp", function()
-    conform.format({
-        lsp_fallback = true,
-        async = false,
-        timeout_ms = 700,
-    })
-end)

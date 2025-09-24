@@ -16,6 +16,9 @@ k.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 
 -- Diagnostic keymaps
 k.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open diagnostic [Q]uickfix list" })
+k.set("n", "<leader>qr", function()
+    require("telescope.builtin").quickfix()
+end, { desc = "Open diagnostic [Q]uickfix list with Telescope" })
 
 -- Disable arrow keys in normal mode
 k.set("n", "<left>", '<cmd>echo "Use h to move!!"<CR>')
@@ -45,7 +48,7 @@ k.set({ "n", "v" }, "<leader>f", function()
     require("conform").format({
         lsp_fallback = true,
         async = false,
-        timeout_ms = 500,
+        timeout_ms = 1000,
     })
 end, { desc = "[F]ormat file or range (in visual mode)" })
 
@@ -62,15 +65,7 @@ k.set("n", "<leader>r", vim.lsp.buf.rename, { desc = "Rename the ficture under c
 --LSPSaga
 k.set("n", "<leader>o", ":Lspsaga outline<CR>", { desc = "Open the outline for the given file" })
 
--- Snippets----------------------------------------
-vim.keymap.set({ "i", "s" }, "<Tab>", function()
-    if require("luasnip").expand_or_jumpable() then
-        require("luasnip").expand_or_jump()
-    end
-end, { silent = true, desc = "Jump to the next STOP in the snippet" })
-
-vim.keymap.set({ "i", "s" }, "<S-Tab>", function()
-    if require("luasnip").jumpable(-1) then
-        require("luasnip").jump(-1)
-    end
-end, { silent = true, desc = "Jump bach the the previous STOP in the snippet" })
+k.set("n", "<leader>st", function()
+    local current = vim.wo.signcolumn
+    vim.wo.signcolumn = (current == "yes") and "no" or "yes"
+end, { desc = "Toggle sign column" })

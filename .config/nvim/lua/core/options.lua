@@ -52,15 +52,11 @@ vim.g.netrw_hide = 1 -- hide the . and .. in netrw
 -- 3: Tree style
 vim.g.netrw_liststyle = 1
 
--- ANSIBLE/YAML --------------------------------------------------------------
+-- FILETYPE ------------------------------------------------------------------
 vim.filetype.add({
     extension = {
         yml = "yaml.ansible",
     },
-})
-
--- FILETYPE ------------------------------------------------------------------
-vim.filetype.add({
     filename = {
         ["JenkinsSync"] = "groovy",
     },

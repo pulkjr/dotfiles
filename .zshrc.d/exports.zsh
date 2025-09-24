@@ -1,6 +1,8 @@
 # Set up fzf key bindings and fuzzy completion
 source <(fzf --zsh)
 
+export TMPDIR=/tmp
+
 #Use fzf-tmux
 export FZF_TMUX=1
 
@@ -54,4 +56,19 @@ export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS \
 #   --color=spinner:#ff007c \
 # "
 
+# Export the msbuildpath
+export MSBUILD_EXE_PATH="/usr/local/share/dotnet/sdk/$(dotnet --version)/MSBuild.dll"
+export PATH="$PATH:/usr/local/share/dotnet/sdk/$(dotnet --version)"
+
+
 export PATH=/Users/jpulk/.local/bin:$PATH
+
+# export dotnet tools
+export PATH="$PATH:/Users/jpulk/.dotnet/tools"
+
+export DYLD_LIBRARY_PATH=/opt/homebrew/opt/icu4c/lib/:$DYLD_LIBRARY_PATH
+export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+
+# Export Java
+export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
+export CPPFLAGS="-I/opt/homebrew/opt/openjdk/include"

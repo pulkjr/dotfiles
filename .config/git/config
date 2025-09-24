@@ -1,0 +1,31 @@
+[user]
+	email = pulkjr@gmail.com
+	name = Joseph Pulk
+	signingkey = 8ed88bb4da391edd1e1e8db5dc47c33a9e8f972f
+[alias]
+	st = status
+	ol = log --pretty=oneline
+	olg = log --graph --decorate --pretty=oneline --abbrev-commit --all
+[core]
+	editor = nvim
+	pager = bat
+[init]
+	defaultBranch = main
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[core]
+	editor = nvim
+[rerere]
+	enable = true
+[branch]
+	sort = -committerdate
+[gpg]
+	program = smimesign
+	format = x509
+[gpg "x509"]
+	program = smimesign
+[commit]
+	gpgsign = false

@@ -15,15 +15,32 @@
 
 -- [[ Configure Telescope ]]
 -- See `:help telescope` and `:help telescope.setup()`
+local action_state = require("telescope.actions.state")
+local actions = require("telescope.actions")
+
 require("telescope").setup({
-    -- You can put your default mappings / updates / etc. in here
-    --  All the info you're looking for is in `:help telescope.setup()`
-    --
-    -- defaults = {
-    --   mappings = {
-    --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
-    --   },
-    -- },
+    defaults = {
+        mappings = {
+            i = {
+                ["<C-y>"] = function(prompt_bufnr)
+                    local entry = action_state.get_selected_entry()
+                    local line = entry.text
+                    vim.fn.setreg("+", line) -- Copy to system clipboard
+                    actions.close(prompt_bufnr) -- Close Telescope
+                    vim.cmd("b#") -- Return to previous buffer
+                end,
+            },
+            n = {
+                ["<C-y>"] = function(prompt_bufnr)
+                    local entry = action_state.get_selected_entry()
+                    local line = entry.text
+                    vim.fn.setreg("+", line) -- Copy to system clipboard
+                    actions.close(prompt_bufnr) -- Close Telescope
+                    vim.cmd("b#") -- Return to previous buffer
+                end,
+            },
+        },
+    },
     pickers = {
         find_files = {
             theme = "ivy",
@@ -76,5 +93,19 @@ end, { desc = "[S]earch [/] in Open Files" })
 vim.keymap.set("n", "<leader>sn", function()
     builtin.find_files({ cwd = vim.fn.stdpath("config") })
 end, { desc = "[S]earch [N]eovim files" })
+
+vim.keymap.set("n", "<C-y>", function()
+    -- You can pass additional configuration to Telescope to change the theme, layout, etc.
+    builtin.current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({
+        winblend = 10,
+        previewer = false,
+    }))
+end, { desc = "[P] Fuzzily search in current buffer" })
+
+--Update the color of the highlighted line
+--
+vim.api.nvim_set_hl(0, "TelescopeSelection", { fg = "white", bg = "#182931" })
+
+vim.api.nvim_set_hl(0, "TelescopePreviewLine", { fg = "black", bg = "#DAAE6B" })
 
 require("core.plugin_configs.telescope_multigrep").setup()

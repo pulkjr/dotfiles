@@ -38,3 +38,16 @@ vim.api.nvim_create_autocmd("LspAttach", {
         end
     end,
 })
+vim.api.nvim_create_autocmd("filetype", {
+    pattern = "ps1",
+    callback = function()
+        vim.fn.matchadd("ps1Help", ".SYNOPSIS")
+        vim.fn.matchadd("ps1Help", ".DESCRIPTION")
+        vim.fn.matchadd("ps1Help", ".HELP")
+        vim.fn.matchadd("ps1Help", ".NOTES")
+        vim.fn.matchadd("ps1Help", ".EXAMPLE")
+        vim.fn.matchadd("ps1Help", ".OUTPUTS")
+    end,
+})
+vim.api.nvim_set_hl(0, "ps1Help", { fg = "#41a7fc", italic = true })
+vim.api.nvim_set_hl(0, "@comment", { fg = "#6c7d9c", italic = true })

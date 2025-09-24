@@ -1,8 +1,4 @@
-local mason = require("mason")
-
-local mason_tool_installer = require("mason-tool-installer")
-
-mason.setup({
+require("mason").setup({
     ui = {
         icons = {
             package_installed = "✓",
@@ -12,23 +8,28 @@ mason.setup({
     },
 })
 
-mason_tool_installer.setup({
+require("mason-lspconfig").setup({
     ensure_installed = {
-        "ansible-lint",
-        "black", -- python formatter
-        "codelldp",
-        "eslint_d", -- js linter
-        "groovyls",
-        "isort", -- python formatter
-        "jsonlint",
-        "lua-language-server",
-        "markdownlint",
-        "markdownlint-cli2",
-        "markdown-toc",
-        "prettier", -- prettier formatter
-        "pylint", -- python linter
-        "rust-analyzer",
-        "stylua", -- lua formatter
-        "typescript-language-server",
+        "lemminx",
+        -- "ansible-lint",
+        -- "black", -- python formatter
+        -- "codelldp",
+        -- "csharpier",
+        -- "eslint_d", -- js linter
+        -- "groovyls", -- This is not installing...
+        -- "isort", -- python formatter
+        -- "jsonlint",
+        "lua_ls",
+        -- "markdown-toc",
+        -- "markdownlint",
+        "marksman",
+        -- "prettier", -- prettier formatter
+        -- "pylint", -- python linter
+        "rust_analyzer",
+        -- "stylua", -- lua formatter
+        -- "tsserver",
+        -- "roslyn",
+        "html",
+        "cssls",
     },
 })
