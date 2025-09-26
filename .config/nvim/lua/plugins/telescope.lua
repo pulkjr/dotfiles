@@ -29,6 +29,12 @@ require("telescope").setup({
                     actions.close(prompt_bufnr) -- Close Telescope
                     vim.cmd("b#") -- Return to previous buffer
                 end,
+                ["<C-i>"] = function(prompt_bufnr)
+                    local entry = action_state.get_selected_entry()
+                    local line = entry.text
+                    actions.close(prompt_bufnr)
+                    vim.api.nvim_put({ line }, "", true, true)
+                end,
             },
             n = {
                 ["<C-y>"] = function(prompt_bufnr)
