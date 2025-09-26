@@ -108,4 +108,4 @@ vim.api.nvim_set_hl(0, "TelescopeSelection", { fg = "white", bg = "#182931" })
 
 vim.api.nvim_set_hl(0, "TelescopePreviewLine", { fg = "black", bg = "#DAAE6B" })
 
-require("core.plugin_configs.telescope_multigrep").setup()
+require("plugins.telescope_multigrep").setup()

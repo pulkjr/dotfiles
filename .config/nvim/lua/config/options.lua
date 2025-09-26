@@ -55,7 +55,8 @@ vim.g.netrw_liststyle = 1
 -- FILETYPE ------------------------------------------------------------------
 vim.filetype.add({
     extension = {
-        yml = "yaml.ansible",
+        -- yml = "yamlansible",
+        yml = "yaml",
     },
     filename = {
         ["JenkinsSync"] = "groovy",

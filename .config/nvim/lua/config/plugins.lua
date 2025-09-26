@@ -36,7 +36,6 @@ require("lazy").setup(
         },
 
         -- LSP PLUGINS ----------------------------------------------------------------------------
-        "neovim/nvim-lspconfig",
         {
             "williamboman/mason.nvim",
             opts = {
@@ -60,11 +59,6 @@ require("lazy").setup(
         },
 
         -- SNIPPETS -------------------------------------------------------------------------------
-        -- "hrsh7th/cmp-nvim-lsp",
-        -- "hrsh7th/cmp-buffer",
-        -- "hrsh7th/cmp-path",
-        -- "hrsh7th/cmp-cmdline",
-        -- "hrsh7th/nvim-cmp",
         {
             "L3MON4D3/LuaSnip",
             version = "v2.*",
@@ -153,7 +147,7 @@ require("lazy").setup(
                 "rcarriga/nvim-dap-ui",
             },
             config = function()
-                require("core.plugin_configs.nvim-dap")
+                require("plugins.nvim-dap")
             end,
             event = "VeryLazy",
         },
@@ -165,7 +159,7 @@ require("lazy").setup(
                 "mfussenegger/nvim-dap",
             },
             config = function()
-                require("core.plugin_configs.nvim-dap-ui")
+                require("plugins.nvim-dap-ui")
             end,
         },
         {
@@ -241,28 +235,31 @@ require("lazy").setup(
         -- Working with multiple cursors
         "mg979/vim-visual-multi",
 
-        -- Navigating to different files within a project
-        {
-            "theprimeagen/harpoon",
-            branch = "harpoon2",
-            dependencies = { "nvim-lua/plenary.nvim" },
-        },
         {
             "jfryy/keytrail.nvim",
             dependencies = {
                 "nvim-treesitter/nvim-treesitter",
                 "nvim-telescope/telescope.nvim",
             },
-            config = function()
-                require("keytrail").setup()
-            end,
         },
         {
             "kylechui/nvim-surround",
             version = "^3.0.0",
             event = "VeryLazy",
             config = function()
-                require("nvim-surround").setup({})
+                require("nvim-surround").setup({
+                    keymaps = {
+                        insert = "<C-g>s", -- Add surround in insert mode
+                        insert_line = "<C-g>S", -- Add surround to entire line in insert mode
+                        normal = "ys", -- Add surround in normal mode
+                        normal_cur = "yss", -- Add surround to current line
+                        normal_line = "yS", -- Add surround to entire line
+                        normal_cur_line = "ySS", -- Add surround to current line (entire)
+                        visual = "S", -- Surround visual selection
+                        delete = "ds", -- Delete surround
+                        change = "cs", -- Change surround
+                    },
+                })
             end,
         },
 
@@ -285,20 +282,10 @@ require("lazy").setup(
         -- Progress UI in the bottom right
         "j-hui/fidget.nvim",
 
-        -- Breadcruoms from the LSP
-        -- "nvimdev/lspsaga.nvim", -- Don't see the value as I am ususally looking for the file I'm in
-
         -- MARKDOWN -------------------------------------------------------------------------------
         "jghauser/follow-md-links.nvim",
         -- Makes working with Markdown Tables better
         "Kicamon/markdown-table-mode.nvim",
-        -- Renders markdown nicely
-        -- Disabled as it is annoying in day to day use
-        -- {
-        --     "MeanderingProgrammer/render-markdown.nvim",
-        --     enabled = true,
-        --     dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" },
-        -- },
     },
     -- LAZY CONFIGURATION -------------------------------------------------------------------------
     {
@@ -306,6 +293,9 @@ require("lazy").setup(
         install = {
             -- Automatically install on startup?
             missing = false,
+            -- Configure any other settings here. See the documentation for more details.
+            -- colorscheme that will be used when installing plugins.
+            colorscheme = { "habamax" },
         },
         -- Notify when a change to plugins is detected?
         change_detection = { notify = false },
@@ -313,6 +303,8 @@ require("lazy").setup(
         rocks = {
             enabled = false,
         },
+        -- automatically check for plugin updates
+        checker = { enabled = true },
         performance = {
             rtp = {
                 disabled_plugins = {

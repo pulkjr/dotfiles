@@ -28,6 +28,5 @@ autocmd("BufWinEnter", {
     end,
 })
 
-vim.keymap.set("n", "gu", "<cmd>diffget //2<CR>")
-vim.keymap.set("n", "gh", "<cmd>diffget //3<CR>")
+vim.keymap.set("n", "<leader>gd", ":Gdiffsplit<CR>", { desc = "Side-by-side git diff with fugitive" })
 vim.keymap.set("n", "<leader>gs", "<cmd>Telescope git_status<CR>", { desc = "Git status" })
