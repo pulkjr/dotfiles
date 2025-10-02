@@ -36,6 +36,7 @@ require("lazy").setup(
         },
 
         -- LSP PLUGINS ----------------------------------------------------------------------------
+        "neovim/nvim-lspconfig",
         {
             "williamboman/mason.nvim",
             opts = {

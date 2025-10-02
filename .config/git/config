@@ -29,3 +29,9 @@
 	program = smimesign
 [commit]
 	gpgsign = false
+
+[includeIf "gitdir:~/git/NMCI/"]
+    path = ~/git/NMCI/.gitconfig
+
+[includeIf "gitdir:~/git/NetApp/"]
+    path = ~/git/NetApp/.gitconfig

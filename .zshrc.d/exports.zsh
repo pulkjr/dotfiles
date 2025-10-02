@@ -18,6 +18,8 @@ export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!.g
 # Set the default editor to NVIM!!
 export EDITOR='nvim'
 
+export MANPAGER='nvim +Man!'
+
 # Set the default viewer for midnight commander
 export VIEWER='bat'
 

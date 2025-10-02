@@ -20,26 +20,20 @@ end, {})
 
 -- Create an autocommand that triggers before a buffer is written to disk
 vim.api.nvim_create_autocmd("BufWritePre", {
-    -- Apply this to all file types
     pattern = "*.md",
-
-    -- Define the callback function to execute
     callback = function()
-        -- Use Vim's substitute command to replace all em dashes (-) with ASCII dashes (-)
-        -- 'g' flag: replace all occurrences in each line
-        -- 'e' flag: suppress errors if no matches are found
-        -- Replace em dash (-) with ASCII dash (-)
-        vim.cmd([[silent! %s/-/-/ge]])
-        -- Replace en dash (–) with ASCII dash (-)
-        vim.cmd([[silent! %s/–/-/ge]])
-        -- Replace smart apostrophe (') with ASCII apostrophe (')
-        vim.cmd([[silent! %s/'/'/ge]])
-        -- Replace smart double quotes (" and ") with ASCII double quote (")
-        vim.cmd([[silent! %s/[""]/"/ge]])
-        -- Replace ellipsis (…) with three dots (...)
-        vim.cmd([[silent! %s/…/.../ge]])
-        -- Remove invisible emoji modifier (U+FE0F)
-        vim.cmd([[silent! %s/\%uFE0F//ge]])
+        -- Save current cursor position (row, col)
+        local pos = vim.api.nvim_win_get_cursor(0)
+
+        -- Perform substitutions
+        vim.cmd([[silent! %s/—/-/ge]]) -- em dash (—) to ASCII dash (-)
+        vim.cmd([[silent! %s/–/-/ge]]) -- en dash (–) to ASCII dash (-)
+        vim.cmd([[silent! %s/’/'/ge]]) -- smart apostrophe (’) to ASCII apostrophe (')
+        vim.cmd([[silent! %s/[“”]/"/ge]]) -- smart double quotes (“ ”) to ASCII double quote (")
+        vim.cmd([[silent! %s/…/.../ge]]) -- ellipsis (…) to three dots (...)
+
+        -- Restore cursor position
+        pcall(vim.api.nvim_win_set_cursor, 0, pos)
     end,
 })
 

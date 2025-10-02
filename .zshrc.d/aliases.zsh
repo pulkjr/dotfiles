@@ -6,9 +6,6 @@ alias cat='bat'
 # Use htop insteal of top
 alias top='htop'
 
-# Use batman insteal of man
-alias man='batman'
-
 # ll will open a preview of the files
 alias ll="fzf --preview 'bat --color \"always\" --style=numbers --line-range=:500 {}' --preview-window=70%,border-double,top"
 
