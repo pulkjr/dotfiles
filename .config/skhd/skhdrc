@@ -153,3 +153,9 @@ ctrl + cmd - z : yabai -m window --toggle zoom-fullscreen
 
 # toggle sticky(+float), picture-in-picture
 # alt - p : yabai -m window --toggle sticky --toggle pip
+cmd + ctrl - b : open -a "Google Chrome"
+cmd + ctrl - t : open -a "Ghostty"
+cmd + ctrl - s : open -a "Spotify"
+cmd + ctrl - o : open -a "Microsoft Outlook"
+cmd + ctrl - m : open -a "Microsoft Teams"
+
