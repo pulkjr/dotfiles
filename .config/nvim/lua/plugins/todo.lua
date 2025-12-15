@@ -1,4 +1,4 @@
-require('todo-comments').setup{
+require("todo-comments").setup({
     signs = true, -- show icons in the signs column
     sign_priority = 8, -- sign priority
     -- keywords recognized as todo comments
@@ -16,10 +16,6 @@ require('todo-comments').setup{
         NOTE = { icon = " ", color = "hint", alt = { "INFO" } },
         TEST = { icon = "⏲ ", color = "test", alt = { "TESTING", "PASSED", "FAILED" } },
         HOLD = { icon = " ", color = "hold" },
-        PROD = { icon = " ", color = "info" },
-        DEVL = { icon = " ", color = "warning" },
-        BSLN = { icon = " ", color = "hint" },
-        CLAS = { icon = " ", color = "test" },
     },
     gui_style = {
         fg = "NONE", -- The gui style to use for the fg highlight group.
@@ -70,4 +66,4 @@ require('todo-comments').setup{
         pattern = [[\b(KEYWORDS):]], -- ripgrep regex
         -- pattern = [[\b(KEYWORDS)\b]], -- match without the extra colon. You'll likely get false positives
     },
-}
+})

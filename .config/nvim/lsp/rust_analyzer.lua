@@ -18,8 +18,8 @@ local on_attach = function(client, bufnr)
     k.set("n", "gi", vim.lsp.buf.implementation, opts)
     k.set("n", "gr", vim.lsp.buf.references, opts)
     k.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
-    k.set("n", "[d", vim.diagnostic.goto_prev, opts)
-    k.set("n", "]d", vim.diagnostic.goto_next, opts)
+    k.set("n", "[d", vim.lsp.diagnostic.goto_prev, opts)
+    k.set("n", "]d", vim.lsp.diagnostic.goto_next, opts)
     k.set("n", "<leader>wa", vim.lsp.buf.add_workspace_folder, opts)
     k.set("n", "<leader>wr", vim.lsp.buf.remove_workspace_folder, opts)
     k.set("n", "<leader>wl", function()
@@ -45,7 +45,11 @@ end
 return {
     on_attach = on_attach,
     capabilities = capabilities,
-    on_init = function(client, _)
-        client.server_capabilities.semanticTokensProvider = true
-    end,
+    settings = {
+        ["rust-analyzer"] = {
+            check = {
+                command = "clippy",
+            },
+        },
+    },
 }

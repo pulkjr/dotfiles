@@ -58,6 +58,8 @@ require("lazy").setup(
                 -- your configuration comes here; leave empty for default settings
             },
         },
+        -- AI -------------------------------------------------------------------------------------
+        "github/copilot.vim",
 
         -- SNIPPETS -------------------------------------------------------------------------------
         {
@@ -229,20 +231,14 @@ require("lazy").setup(
 
                 -- Useful for getting pretty icons, but requires a Nerd Font.
                 { "nvim-tree/nvim-web-devicons", enabled = vim.g.have_nerd_font },
+                {
+                    "nvim-telescope/telescope-live-grep-args.nvim",
+                    version = "^1.0.0",
+                },
             },
         },
 
         -- NAVIGATION -----------------------------------------------------------------------------
-        -- Working with multiple cursors
-        "mg979/vim-visual-multi",
-
-        {
-            "jfryy/keytrail.nvim",
-            dependencies = {
-                "nvim-treesitter/nvim-treesitter",
-                "nvim-telescope/telescope.nvim",
-            },
-        },
         {
             "kylechui/nvim-surround",
             version = "^3.0.0",
@@ -275,7 +271,13 @@ require("lazy").setup(
         {
             "windwp/nvim-autopairs",
             event = "InsertEnter",
-            config = true,
+            config = function()
+                require("nvim-autopairs").setup({
+                    fast_wrap = {},
+                    disable_filetype = { "TelescopePrompt", "vim" },
+                    map_cr = true,
+                })
+            end,
         },
         -- Highlight the words under cursor
         { "echasnovski/mini.cursorword", version = "*" },

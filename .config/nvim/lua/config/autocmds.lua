@@ -47,3 +47,24 @@ vim.api.nvim_create_autocmd("FileType", {
         end, { buffer = true }) -- `buffer = true` ensures it applies only to the current file
     end,
 })
+
+-- Search Colors ----------------------------------------------------------------------------------
+vim.api.nvim_create_autocmd({ "ColorScheme", "VimEnter" }, {
+    callback = function()
+        vim.api.nvim_set_hl(0, "Search", {
+            bg = "#56b6c2",
+            fg = "#282c34",
+        }) -- Change background color
+    end,
+})
+
+-- XML --------------------------------------------------------------------------------------------
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "xml",
+    callback = function()
+        vim.opt_local.expandtab = true -- use spaces instead of table
+        vim.opt_local.tabstop = 2 -- number of spaces per tab
+        vim.opt_local.shiftwidth = 2 -- indentation width
+        vim.opt_local.softtabstop = 2 -- editing width for tabs
+    end,
+})

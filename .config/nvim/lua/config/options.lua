@@ -15,7 +15,7 @@ vim.opt.wrap = false -- Disables line wrapping; lines continue horizontally with
 vim.opt.incsearch = true -- Enables incremental search (highlights matches as you type)
 vim.opt.ignorecase = true -- Makes search case-insensitive
 vim.opt.smartcase = true -- Overrides 'ignorecase' if uppercase letters are used in the search
-vim.opt.hlsearch = false -- Disables search result highlighting after the search is done
+vim.opt.hlsearch = true -- Disables search result highlighting after the search is done
 
 -- APPEARANCE ----------------------------------------------------------------
 opt.number = true -- Make line numbers default
@@ -39,6 +39,7 @@ opt.undofile = true -- Save undo history
 opt.updatetime = 250 -- Decrease update time
 opt.timeoutlen = 300 -- Decrease mapped sequece wait time
 opt.inccommand = "split" -- Preview substitutions live, as you type
+opt.splitright = true -- Always split the window to the right
 
 -- NETRW ---------------------------------------------------------------------
 
