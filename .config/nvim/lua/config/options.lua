@@ -26,7 +26,6 @@ opt.signcolumn = "no" -- Disable the left gutter
 opt.cmdheight = 1
 opt.scrolloff = 15 -- Minimal number of screen lines to keep above and below the cursor.
 opt.completeopt = "menuone,noinsert,noselect"
--- opt.conceallevel   = 2
 opt.showmode = false -- Don't show the mode
 opt.breakindent = true -- Wrapped lines are indented
 opt.list = true -- Sets how neovim will display certain whitespace characters in the editor.
@@ -40,6 +39,7 @@ opt.updatetime = 250 -- Decrease update time
 opt.timeoutlen = 300 -- Decrease mapped sequece wait time
 opt.inccommand = "split" -- Preview substitutions live, as you type
 opt.splitright = true -- Always split the window to the right
+opt.spelllang = "en_us" -- Set the language to English
 
 -- NETRW ---------------------------------------------------------------------
 

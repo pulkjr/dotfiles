@@ -69,3 +69,13 @@ k.set("n", "<leader>st", function()
     local current = vim.wo.signcolumn
     vim.wo.signcolumn = (current == "yes") and "no" or "yes"
 end, { desc = "Toggle sign column" })
+
+k.set("n", "[d", function()
+    vim.lsp.diagnostic.goto_prev()
+    vim.lsp.diagnostic.open_float()
+end, { desc = "Prev diagnostic + show full message" })
+
+k.set("n", "]d", function()
+    vim.lsp.diagnostic.goto_next()
+    vim.lsp.diagnostic.open_float()
+end, { desc = "Next diagnostic + show full message" })
