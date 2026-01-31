@@ -1,0 +1,38 @@
+data.location=/Users/jpulk/.task
+news.version=3.4.0
+
+data.location=~/.local/share/task
+hooks.location=~/.config/task/hooks
+
+# Color theme (uncomment one to use)
+#include light-16.theme
+#include light-256.theme
+#include dark-16.theme
+include dark-256.theme
+#include dark-red-256.theme
+#include dark-green-256.theme
+#include dark-blue-256.theme
+#include dark-violets-256.theme
+#include dark-yellow-green.theme
+#include dark-gray-256.theme
+#include dark-gray-blue-256.theme
+#include solarized-dark-256.theme
+#include solarized-light-256.theme
+#include no-color.theme
+
+regex=on
+search.case.sensitive=no
+uda.env.type=string
+uda.env.label=Environment
+uda.env.values=dev,bsln,nipr,ahds,sipr,ntap
+uda.env.default=nipr
+uda.assigned.type=string
+uda.assigned.label=Assigned To
+report.assigned.description=All the tasks that have been assigned to other people
+report.assigned.columns=id,assigned,project,description,urgency
+report.assigned.sort=assigned+
+report.assigned.filter=assigned.not:
+report.list.filter=assigned: and status.not:Completed and status.not:Deleted and -backlog
+report.backlog.description=All of the tasks currently in the backlog
+report.backlog.filter=status.not:Completed and status.not:Deleted and assigned: +backlog
+report.backlog.columns=id,entry.age,due,project,description.count,tags
