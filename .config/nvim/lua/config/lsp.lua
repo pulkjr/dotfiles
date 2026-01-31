@@ -7,8 +7,10 @@ vim.lsp.enable({
     "lemminx",
     "lua_ls",
     "marksman",
-    "roslyn",
     "powershell_es",
+    "roslyn",
+    "rust_analyzer",
+    "zk",
 })
 
 -- Formatting ----------------------------------------------------------------

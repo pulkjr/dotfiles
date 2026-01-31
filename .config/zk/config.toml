@@ -39,28 +39,26 @@ recent = "zk edit --sort created- --created-after 'last two weeks' --interactive
 conf = '$EDITOR ~/.config/zk/config.toml'
 config = '$EDITOR ~/.config/zk/config.toml'
 
-# Show a list of notes tagged as servers
-server = "zk edit --sort created- --tag 'server' --interactive"
-
-todo = 'cd "$ZK_NOTEBOOK_DI"; zk new --no-input "$ZK_NOTEBOOK_DIR/journal/todo";'
-backlog = '$EDITOR "$ZK_NOTEBOOK_DIR/journal/backlog.md"'
-
 # Create a new note
 n = 'zk new --title "$@"'
 
-# Create a new project note
-np = 'zk new --title "$@" --template project.md'
+# Create a new azure note
+az = 'zk new --title "$@" --template azure.md "$ZK_NOTEBOOK_DIR/azure"'
 
-[group.todo]
+# Show a list of notes tagged as servers
+azure = "zk edit --sort created- --tag 'azure' --interactive"
+
+map = 'zk new --title "$@" --template map.md "$ZK_NOTEBOOK_DIR/maps"'
+
+[group.azure]
 # Directories listed here will automatically use this group when creating notes.
-paths = ["journal/todo"]
-
-[group.todo.note]
-# %Y-%m-%d is actually the default format, so you could use {{format-date now}} instead.
-filename = "{{format-date now '%Y-%m'}}"
+paths = ["azure"]
+template = "azure.md"
 extension = "md"
-template = "todo.md"
+filename = "{{date:YYYYMMDDHHmm}}-{{slug title}}"
 
-[group.project]
-template = "project.md"
+[group.map]
+paths = ["maps"]
+template = "map.md"
 extension = "md"
+

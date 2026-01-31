@@ -61,9 +61,10 @@ alias fcode='fzf_open_file'
 # setup zoxide
 eval "$(zoxide init zsh --cmd cd)"
 
-# Run neofetch
-# neofetch
+# Search Google using w3m
+alias '?'='search_w3m'
 
-# Open vscode
-# code () { VSCODE_CWD="$PWD" open -n -b "com.microsoft.VSCode" --args $* ;}
-
+search_w3m() {
+   query=$(printf "%s" "$*" | sed 's/ /+/g')
+    w3m "https://duckduckgo.com/?q=$query"
+}

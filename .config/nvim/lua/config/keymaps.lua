@@ -70,12 +70,37 @@ k.set("n", "<leader>st", function()
     vim.wo.signcolumn = (current == "yes") and "no" or "yes"
 end, { desc = "Toggle sign column" })
 
-k.set("n", "[d", function()
-    vim.lsp.diagnostic.goto_prev()
-    vim.lsp.diagnostic.open_float()
-end, { desc = "Prev diagnostic + show full message" })
+-- LSP Keymaps
+vim.api.nvim_create_autocmd("LspAttach", {
+    callback = function(args)
+        local bufnr = args.buf
+        local client = vim.lsp.get_client_by_id(args.data.client_id)
 
-k.set("n", "]d", function()
-    vim.lsp.diagnostic.goto_next()
-    vim.lsp.diagnostic.open_float()
-end, { desc = "Next diagnostic + show full message" })
+        -- Base opts for all LSP keymaps
+        local opts = { buffer = bufnr, silent = true }
+
+        -- Helper to merge opts + description
+        local function map(mode, lhs, rhs, desc)
+            vim.keymap.set(mode, lhs, rhs, vim.tbl_extend("force", opts, { desc = desc }))
+        end
+
+        -- LSP Keymaps (with Telescope-friendly descriptions)
+        map("n", "gD", "<cmd>Telescope lsp_type_definitions<CR>", "LSP: Type Definitions")
+        map("n", "gd", vim.lsp.buf.definition, "LSP: Go to Definition")
+        map("n", "gn", vim.lsp.buf.rename, "LSP: Rename Symbol")
+        map("n", "K", vim.lsp.buf.hover, "LSP: Hover Documentation")
+        map("n", "gh", vim.lsp.buf.signature_help, "LSP: Signature Help")
+        map("n", "gi", vim.lsp.buf.implementation, "LSP: Go to Implementation")
+        map("n", "gr", vim.lsp.buf.references, "LSP: Find References")
+        map("n", "<leader>ca", vim.lsp.buf.code_action, "LSP: Code Action")
+        map("n", "[d", function()
+            vim.diagnostic.jump({ count = -1, float = true })
+            vim.diagnostic.open_float()
+        end, "LSP: Previous Diagnostic")
+        map("n", "]d", function()
+            vim.diagnostic.jump({ count = 1, float = true })
+            vim.diagnostic.open_float()
+        end, "LSP: Next Diagnostic")
+        map("n", "<leader>r", vim.lsp.buf.rename, "LSP: Rename Symbol")
+    end,
+})

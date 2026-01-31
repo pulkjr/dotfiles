@@ -1,25 +1,49 @@
 -- Add keybindings here, see https://github.com/neovim/nvim-lspconfig#keybindings-and-completion
+
+local zk_root = vim.fn.expand("~/git/Personal/dailyZK")
+
 local on_attach = function(client, bufnr)
-    -- Key mappings
-    local function buf_set_keymap(...)
-        vim.api.nvim_buf_set_keymap(bufnr, ...)
+    local map = function(mode, lhs, rhs)
+        vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, silent = true, noremap = true })
     end
-    local opts = { noremap = true, silent = true }
-    buf_set_keymap("n", "<CR>", "<cmd>lua vim.lsp.buf.definition()<CR>", opts)
-    buf_set_keymap("n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>", opts)
-    buf_set_keymap("n", "<leader>zi", ":ZkIndex<CR>", opts)
-    buf_set_keymap("v", "<leader>zn", ":'<,'>lua vim.lsp.buf.range_code_action()<CR>", opts)
-    buf_set_keymap("n", "<leader>zn", ":ZkNew {title = vim.fn.input('Title: ')}<CR>", opts)
-    buf_set_keymap("n", "<leader>zl", ":ZkNew {dir = 'log'}<CR>", opts)
+    -- LSP basics
+    map("n", "K", vim.lsp.buf.hover)
+    map("n", "<CR>", vim.lsp.buf.definition)
+
+    -- Follow [[links]] with Enter
+    map("n", "gd", vim.lsp.buf.definition)
+    map("n", "gr", vim.lsp.buf.references)
+
+    -- ZK commands
+    map("n", "<leader>zi", "<cmd>ZkIndex<CR>")
+    map("n", "<leader>zs", "<cmd>ZkNotes<CR>")
+    map("n", "<leader>zt", "<cmd>ZkTags<CR>")
+
+    -- Create a new note with title prompt
+    map("n", "<leader>zn", function()
+        require("zk.commands").get("ZkNew")({ title = vim.fn.input("Title: ") })
+    end)
+
+    -- Create a note in the "log" directory
+    map("n", "<leader>zl", function()
+        require("zk.commands").get("ZkNew")({ dir = "log" })
+    end)
+
+    -- Insert a link to another note
+    map("n", "<leader>zl", "<cmd>ZkLink<CR>")
 end
 
 return {
     on_attach = on_attach,
     cmd = { "zk", "lsp" },
     filetypes = { "markdown" },
-    -- root_dir = function()
-    --     vim.lsp.util.util.root_pattern(".zk")
-    --     -- return vim.loop.cwd()
-    -- end,
+    root_dir = function(fname)
+        local fullpath = vim.fn.fnamemodify(fname, ":p")
+        if fullpath:find(zk_root, 1, true) then
+            return zk_root
+        end
+        -- Returning nil tells Neovim NOT to start zk-lsp
+        return nil
+    end,
     settings = {},
 }

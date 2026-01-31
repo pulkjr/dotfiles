@@ -10,7 +10,7 @@ require("mason").setup({
 
 require("mason-lspconfig").setup({
     ensure_installed = {
-        "lemminx",
+        -- "lemminx",
         -- "ansible-lint",
         -- "black", -- python formatter
         -- "codelldp",
@@ -25,11 +25,11 @@ require("mason-lspconfig").setup({
         "marksman",
         -- "prettier", -- prettier formatter
         -- "pylint", -- python linter
-        "rust_analyzer",
+        -- "rust_analyzer",
         -- "stylua", -- lua formatter
         -- "tsserver",
         -- "roslyn",
         "html",
-        "cssls",
+        -- "cssls",
     },
 })

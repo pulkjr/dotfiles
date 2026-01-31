@@ -59,13 +59,11 @@ plugins=(
     git
     gitfast
     dotnet
-    docker
-    docker-compose
     macos
     tmux
     zsh-autosuggestions
     zsh-syntax-highlighting
-    )
+)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -92,11 +90,13 @@ if (( _custom_zsh_config_loaded )); then
 fi
 _custom_zsh_config_loaded=1
 
-# load all our config files
+# load all config files
 for file ($_custom_zsh_config_base/.zshrc.d/*.zsh(N)); do
 	source $file
 done
 
-export PATH="$(brew --prefix)/opt/node@18/bin:$(brew --prefix)/opt/llvm/bin:/Users/jpulk/Library/Python/3.11/bin:$PATH"
+if [[ "$(uname)" == "Darwin" ]]; then
+    export PATH="$(brew --prefix)/opt/node@18/bin:$(brew --prefix)/opt/llvm/bin:$HOME/Library/Python/3.11/bin:$PATH"
+fi
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

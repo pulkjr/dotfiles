@@ -23,30 +23,32 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 -- Folds ------------------------------------------------------------------------------------------
 --
 -- Enable folds if there is a treesitter for this filetype
-vim.api.nvim_create_autocmd({ "FileType" }, {
+vim.api.nvim_create_autocmd("FileType", {
     callback = function()
-        if require("nvim-treesitter.parsers").has_parser() then
-            vim.opt.foldmethod = "expr"
-            vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
+        local ok = pcall(vim.treesitter.get_parser, 0)
+
+        if ok then
+            vim.opt_local.foldmethod = "expr"
+            vim.opt_local.foldexpr = "v:lua.vim.treesitter.foldexpr()"
         else
-            vim.opt.foldmethod = "syntax"
+            vim.opt_local.foldmethod = "syntax"
         end
     end,
 })
 
 -- Powershell -------------------------------------------------------------------------------------
-vim.api.nvim_create_autocmd("FileType", {
-    pattern = "ps1",
-    callback = function()
-        vim.keymap.set("n", "<leader>r", function()
-            local word = vim.fn.expand("<cword>")
-            local replacement = vim.fn.input("Replace " .. word .. " with: ")
-            if replacement ~= "" then
-                vim.cmd(":%s/" .. word .. "/" .. replacement .. "/gc")
-            end
-        end, { buffer = true }) -- `buffer = true` ensures it applies only to the current file
-    end,
-})
+-- vim.api.nvim_create_autocmd("FileType", {
+--     pattern = "ps1",
+--     callback = function()
+--         vim.keymap.set("n", "<leader>r", function()
+--             local word = vim.fn.expand("<cword>")
+--             local replacement = vim.fn.input("Replace " .. word .. " with: ")
+--             if replacement ~= "" then
+--                 vim.cmd(":%s/" .. word .. "/" .. replacement .. "/gc")
+--             end
+--         end, { buffer = true }) -- `buffer = true` ensures it applies only to the current file
+--     end,
+-- })
 
 -- Search Colors ----------------------------------------------------------------------------------
 vim.api.nvim_create_autocmd({ "ColorScheme", "VimEnter" }, {
@@ -54,7 +56,7 @@ vim.api.nvim_create_autocmd({ "ColorScheme", "VimEnter" }, {
         vim.api.nvim_set_hl(0, "Search", {
             bg = "#56b6c2",
             fg = "#282c34",
-        }) -- Change background color
+        })
     end,
 })
 

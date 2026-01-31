@@ -1,19 +1,32 @@
 require("lazy").setup(
     {
         "navarasu/onedark.nvim",
-        "nvim-treesitter/nvim-treesitter",
+        {
+            "nvim-treesitter/nvim-treesitter",
+            lazy = false,
+            branch = "main",
+            build = ":TSUpdate",
+        },
+        {
+            "MeanderingProgrammer/treesitter-modules.nvim",
+            dependencies = { "nvim-treesitter/nvim-treesitter" },
+            ---@module 'treesitter-modules'
+            ---@type ts.mod.UserConfig
+            opts = {},
+        },
         {
             "nvim-treesitter/nvim-treesitter-textobjects",
+            branch = "main",
             dependencies = {
                 "nvim-treesitter/nvim-treesitter",
             },
         },
-        {
-            "nvim-treesitter/nvim-treesitter-refactor",
-            dependencies = {
-                "nvim-treesitter/nvim-treesitter",
-            },
-        },
+        -- {
+        --     "nvim-treesitter/nvim-treesitter-refactor",
+        --     dependencies = {
+        --         "nvim-treesitter/nvim-treesitter",
+        --     },
+        -- },
         "nvim-lua/plenary.nvim",
         {
             "folke/todo-comments.nvim",
@@ -60,6 +73,30 @@ require("lazy").setup(
         },
         -- AI -------------------------------------------------------------------------------------
         "github/copilot.vim",
+        {
+            "CopilotC-Nvim/CopilotChat.nvim",
+            dependencies = {
+                { "nvim-lua/plenary.nvim", branch = "master" },
+            },
+            opts = {
+                context = {
+                    files = {
+                        ".copilot/*.md",
+                        ".copilot/**/*.md",
+                    },
+                },
+            },
+        },
+        {
+            "ravitemer/mcphub.nvim",
+            dependencies = {
+                "nvim-lua/plenary.nvim",
+            },
+            build = "npm install -g mcp-hub@latest", -- Installs `mcp-hub` node binary globally
+            config = function()
+                require("mcphub").setup()
+            end,
+        },
 
         -- SNIPPETS -------------------------------------------------------------------------------
         {
@@ -210,7 +247,7 @@ require("lazy").setup(
         {
             "nvim-telescope/telescope.nvim",
             event = "VimEnter",
-            branch = "0.1.x",
+            version = "*",
             dependencies = {
                 "nvim-lua/plenary.nvim",
                 {
@@ -295,7 +332,7 @@ require("lazy").setup(
         ui = { border = "rounded" },
         install = {
             -- Automatically install on startup?
-            missing = false,
+            missing = true,
             -- Configure any other settings here. See the documentation for more details.
             -- colorscheme that will be used when installing plugins.
             colorscheme = { "habamax" },

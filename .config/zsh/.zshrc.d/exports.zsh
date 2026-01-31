@@ -57,3 +57,7 @@ export DOTNET_CLI_TELEMETRY_OPTOUT=true
 # Export Java
 export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
 export CPPFLAGS="-I/opt/homebrew/opt/openjdk/include"
+
+# User podman for docker
+export DOCKER_PATH=$(which podman)
+export DOCKER_HOST=$(which podman)

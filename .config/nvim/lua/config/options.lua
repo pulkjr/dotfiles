@@ -40,6 +40,7 @@ opt.timeoutlen = 300 -- Decrease mapped sequece wait time
 opt.inccommand = "split" -- Preview substitutions live, as you type
 opt.splitright = true -- Always split the window to the right
 opt.spelllang = "en_us" -- Set the language to English
+opt.spelloptions = "camel" -- Sets the spell checker to user Camel Caseing
 
 -- NETRW ---------------------------------------------------------------------
 

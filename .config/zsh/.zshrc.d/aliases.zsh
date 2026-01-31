@@ -10,8 +10,10 @@
 # File viewing / navigation
 # ----------------------------------------
 
-alias ls="eza"
+alias ls="eza -lh --group-directories-first --icons=auto --git"
 alias la="eza -la"
+alias lt="eza --tree --icons --git --level=3"
+alias ll="eza -lah --icons --group-directories-first"
 
 # ----------------------------------------
 # System monitoring / disk usage
@@ -57,6 +59,7 @@ alias config="git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME"
 
 # Manage dotfiles with lazygit
 alias lzdiff="GIT_DIR=$HOME/.dotfiles GIT_WORK_TREE=$HOME lazygit"
+alias lzconfig="GIT_DIR=$HOME/.dotfiles GIT_WORK_TREE=$HOME lazygit"
 
 # ----------------------------------------
 # Misc
@@ -65,3 +68,13 @@ alias lzdiff="GIT_DIR=$HOME/.dotfiles GIT_WORK_TREE=$HOME lazygit"
 # Launch VS Code with TLS disabled (for Sourcegraph)
 alias code="node_tls_reject_unauthorized=0 code"
 
+#----------------------------------------
+# Timewarrior & Taskwarrior
+# ----------------------------------------
+alias tw="timew"
+
+# ----------------------------------------
+# Containers
+# ----------------------------------------
+# alias docker="podman"
+# alias docker-compose="podman-compose"
