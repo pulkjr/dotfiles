@@ -26,3 +26,16 @@ cat > "$config_file" <<EOF
 EOF
 
 echo "Git user config written to $config_file"
+
+# If this is a mac then run the macOS defaults script
+if [[ "$(uname)" == "Darwin" ]]; then
+    if [ -f "./macos/defaults.sh" ]; then
+        echo "macOS detected. Applying macOS defaults..."
+        chmod +x ./macos/defaults.sh
+        ./macos/defaults.sh
+    else
+        echo "defaults.sh not found. Skipping macOS defaults."
+    fi
+else
+    echo "Non-macOS system detected. Skipping macOS defaults."
+fi
