@@ -231,16 +231,14 @@ require("lazy").setup(
         --     version = "^5", -- Recommended
         --     lazy = false, -- This plugin is already lazy
         -- },
-        -- Lint
-        -- {
-        --     "mfussenegger/nvim-lint",
-        --     event = { "BufReadPre", "BufNewFile" },
-        -- },
 
         -- LINTING --------------------------------------------------------------------------------
         {
             "stevearc/conform.nvim",
             event = { "BufReadPre", "BufNewFile" },
+        },
+        {
+            "mfussenegger/nvim-lint",
         },
 
         -- FUZZY FIND -----------------------------------------------------------------------------

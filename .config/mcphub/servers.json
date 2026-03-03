@@ -2,18 +2,16 @@
   "mcpServers": {
     "filesystem": {
       "args": [
-        "-y",
-        "@modelcontextprotocol/server-filesystem",
-        "/Users/jpulk/.config/nvim",
-        "/Users/jpulk/git/NetApp/*",
-        "/Users/jpulk/git/Personal/*",
-        "/Users/jpulk/projects/*",
-        "/workspace"
+        "run",
+        "-i",
+        "--rm",
+        "--mount",
+        "type=bind,src=${CWD},dst=/projects",
+        "mcp/filesystem",
+        "/projects"
       ],
-      "command": "npx",
-      "custom_instructions": {
-        "disabled": false
-      }
+      "command": "docker",
+      "disabled": false
     }
   },
   "nativeMCPServers": {}
