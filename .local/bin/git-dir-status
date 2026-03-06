@@ -17,7 +17,7 @@ for dir in "$BASE"/*/*; do
     cd "$dir" || continue
 
     # Detect misconfigured remote
-    if ! GIT_TERMINAL_PROMPT=0 git fetch --dry-run --quiet 2>/dev/null; then
+    if ! GIT_TERMINAL_PROMPT=0 git fetch --dry-run 2>/dev/null; then
         echo -e " ${RED}• Remote misconfigured or requires authentication${RESET}"
         echo
         continue
@@ -71,6 +71,16 @@ for dir in "$BASE"/*/*; do
         echo -e " ${RED}• Commits to pull${RESET}"
         continue
     fi
+
+    # Check other local branches ahead of their remote
+    while IFS= read -r local_branch; do
+        [ "$local_branch" = "$branch" ] && continue
+        remote_branch=$(git rev-parse --abbrev-ref "${local_branch}@{upstream}" 2>/dev/null)
+        [ -z "$remote_branch" ] && continue
+        if [ -n "$(git log --oneline "$remote_branch".."$local_branch")" ]; then
+            echo -e " ${YELLOW}• Branch '${local_branch}' is ahead of remote${RESET}"
+        fi
+    done < <(git for-each-ref --format='%(refname:short)' refs/heads/)
 
     echo -e " ${GREEN}Nothing to commit, push, or pull${RESET}"
     echo
