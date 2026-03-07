@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/bin/bash
 
 # Validate if podman is installed. If installed link docker to podman
 if command -v podman >/dev/null 2>&1; then
@@ -33,6 +33,12 @@ if [[ "$(uname)" == "Darwin" ]]; then
         echo "macOS detected. Applying macOS defaults..."
         chmod +x ./macos/defaults.sh
         ./macos/defaults.sh
+
+        chmod +x ./macos/podman_config.sh
+        ./macos/podman_config.sh
+
+        chmod +x ./macos/swap_caps.sh
+        ./macos/swap_caps.sh
     else
         echo "defaults.sh not found. Skipping macOS defaults."
     fi
