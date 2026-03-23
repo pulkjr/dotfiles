@@ -1,0 +1,59 @@
+add_newline = true
+
+format = """
+$username$hostname$container$directory$git_branch$git_status$nodejs$python$rust$dotnet$cmd_duration$status
+$character"""
+
+[character]
+success_symbol = "[❯](bold #7dcfff)"
+error_symbol = "[❯](bold #f7768e)"
+vicmd_symbol = "[❮](bold #9ece6a)"
+
+[directory]
+style = "bold #7aa2f7"
+truncation_length = 3
+truncate_to_repo = true
+
+[git_branch]
+symbol = " "
+style = "bold #9ece6a"
+
+[git_status]
+style = "bold #f7768e"
+
+[container]
+symbol = "⬡ "
+style = "bold #e0af68"
+
+[username]
+show_always = false
+style_user = "bold #bb9af7"
+
+[hostname]
+ssh_only = true
+style = "bold #7dcfff"
+
+[nodejs]
+detect_files = ["package.json", ".node-version"]
+
+[python]
+detect_files = ["requirements.txt", "pyproject.toml", ".python-version", "setup.py"]
+
+[rust]
+detect_files = ["Cargo.toml"]
+
+[dotnet]
+detect_files = ["*.csproj", "*.fsproj", "global.json"]
+
+[cmd_duration]
+min_time = 2000
+style = "bold #e0af68"
+
+[status]
+disabled = false
+style = "bold #f7768e"
+symbol = "✘ "
+format = "[$symbol$status]($style) "
+
+[time]
+disabled = true

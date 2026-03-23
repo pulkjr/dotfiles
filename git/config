@@ -1,0 +1,44 @@
+[user]
+	email = pulkjr@gmail.com
+	name = Joseph
+	signingkey = 8ed88bb4da391edd1e1e8db5dc47c33a9e8f972f
+[alias]
+	st = status
+	ol = log --pretty=oneline
+	olg = log --graph --decorate --pretty=oneline --abbrev-commit --all
+[core]
+	editor = nvim
+	pager = bat
+	excludesFile = ~/.config/git/ignore
+[init]
+	defaultBranch = main
+[pull]
+	rebase = true
+[push]
+	autoSetupRemote = true
+[fetch]
+	prune = true
+[diff]
+	algorithm = histogram
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[rerere]
+	enabled = true
+[branch]
+	sort = -committerdate
+[gpg]
+	program = smimesign
+	format = x509
+[gpg "x509"]
+	program = smimesign
+[commit]
+	gpgsign = false
+
+[includeIf "gitdir:~/git/NMCI/"]
+    path = ~/git/NMCI/.gitconfig
+
+[includeIf "gitdir:~/git/NetApp/"]
+    path = ~/git/NetApp/.gitconfig

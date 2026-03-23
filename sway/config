@@ -1,0 +1,92 @@
+# Sway config — mirrors macOS skhd/yabai keybindings
+# $mod = Super (equivalent to macOS cmd key)
+# See skhd/skhdrc for macOS counterparts
+
+set $mod Mod4
+set $alt Mod1
+set $term ghostty
+set $browser flatpak run com.google.Chrome
+set $spotify flatpak run com.spotify.Client
+set $teams flatpak run com.microsoft.Teams
+set $obsidian flatpak run md.obsidian.Obsidian
+set $outlook flatpak run com.microsoft.Edge  # use Edge for Outlook Web
+
+# Font
+font pango:CaskaydiaCove Nerd Font Mono 11
+
+# Gaps (mirrors yabai padding)
+gaps inner 6
+gaps outer 2
+
+# App launchers — mirrors skhd cmd+ctrl+X
+bindsym $mod+ctrl+b exec $browser
+bindsym $mod+ctrl+t exec $term
+bindsym $mod+ctrl+s exec $spotify
+bindsym $mod+ctrl+m exec $teams
+bindsym $mod+ctrl+n exec $obsidian
+
+# Window focus — mirrors skhd alt+hjkl (yabai focus)
+bindsym $alt+h focus left
+bindsym $alt+j focus down
+bindsym $alt+k focus up
+bindsym $alt+l focus right
+
+# Move window — mirrors skhd shift+alt+hjkl
+bindsym $alt+Shift+h move left
+bindsym $alt+Shift+j move down
+bindsym $alt+Shift+k move up
+bindsym $alt+Shift+l move right
+
+# Resize window — mirrors skhd shift+cmd+hjkl
+bindsym $mod+Shift+h resize shrink width 40px
+bindsym $mod+Shift+j resize grow height 40px
+bindsym $mod+Shift+k resize shrink height 40px
+bindsym $mod+Shift+l resize grow width 40px
+
+# Toggle fullscreen — mirrors ctrl+cmd+z
+bindsym $mod+ctrl+z fullscreen toggle
+
+# Toggle floating — mirrors alt+t
+bindsym $alt+t floating toggle
+
+# Toggle split direction — mirrors alt+e
+bindsym $alt+e layout toggle split
+
+# Focus workspaces 1-5 — mirrors cmd+alt+1-5
+bindsym $mod+$alt+1 workspace number 1
+bindsym $mod+$alt+2 workspace number 2
+bindsym $mod+$alt+3 workspace number 3
+bindsym $mod+$alt+4 workspace number 4
+bindsym $mod+$alt+5 workspace number 5
+
+# Send window to workspace — mirrors shift+cmd+1-5
+bindsym $mod+Shift+1 move container to workspace number 1; workspace number 1
+bindsym $mod+Shift+2 move container to workspace number 2; workspace number 2
+bindsym $mod+Shift+3 move container to workspace number 3; workspace number 3
+bindsym $mod+Shift+4 move container to workspace number 4; workspace number 4
+bindsym $mod+Shift+5 move container to workspace number 5; workspace number 5
+
+# Move window to next output (monitor) — mirrors ctrl+cmd+c
+bindsym $mod+ctrl+c move container to output next; focus output next
+
+# Close window
+bindsym $mod+q kill
+
+# Reload/exit sway
+bindsym $mod+Shift+r reload
+bindsym $mod+Shift+q exec swaymsg exit
+
+# Status bar
+bar {
+    swaybar_command waybar
+}
+
+# Autostart
+exec --no-startup-id dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
+
+# Floating window rules
+for_window [app_id="^(nm-connection-editor|pavucontrol)$"] floating enable
+for_window [window_role="^(dialog|pop-up|bubble|task_dialog|menu|Preferences)$"] floating enable
+for_window [window_type="^(dialog|menu|utility|toolbar|splash|popup_menu|dropdown_menu)$"] floating enable
+for_window [title="^(Open File|Save File|Open Folder|File Manager|Choose Files|Open|Save As)"] floating enable
+for_window [app_id="^(zenity|xdg-desktop-portal-gtk|polkit-gnome-authentication-agent-1)$"] floating enable

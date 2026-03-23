@@ -1,0 +1,162 @@
+#!/usr/bin/env bash
+# =============================================================================
+# Container bash configuration
+# =============================================================================
+# This file lives in linux-dotfiles/bash/bashrc and is mounted into containers
+# at /home/dev/.bashrc by the container functions in zsh/scripts/functions.zsh:
+#
+#   -v "$HOME/linux-dotfiles/bash/bashrc":/home/dev/.bashrc
+#
+# It is seeded from ~/.config/bash/bashrc during first bootstrap.
+# Commit changes to the linux-dotfiles repo, not this one.
+# =============================================================================
+
+# --- History ------------------------------------------------------------------
+
+export HISTSIZE=10000
+export HISTFILESIZE=20000
+export HISTCONTROL=ignoredups:erasedups
+export HISTTIMEFORMAT="%Y-%m-%d %H:%M:%S  "
+
+# Append to history on every command; don't overwrite on exit
+shopt -s histappend
+PROMPT_COMMAND="history -a; history -n; ${PROMPT_COMMAND}"
+
+# --- Vi mode ------------------------------------------------------------------
+
+set -o vi
+
+# Cursor shape: beam (|) in INSERT mode, block (█) in NORMAL mode
+# These are ANSI escape sequences for terminal cursor styles
+_vi_mode_cursor() {
+    if [[ ${READLINE_LINE+x} ]]; then
+        # Checked at prompt draw time via bind
+        :
+    fi
+}
+
+# Switch cursor to beam on entering insert mode, block on normal mode
+bind 'set show-mode-in-prompt off'
+# Insert mode → beam cursor
+bind '"\\e[?1049l": ""'
+if [[ "$TERM" != "dumb" ]]; then
+    bind 'set vi-ins-mode-string \1\e[6 q\2'
+    bind 'set vi-cmd-mode-string \1\e[2 q\2'
+fi
+
+# Ensure beam cursor on shell start (insert mode default)
+printf '\e[6 q'
+# Reset to beam on exit
+trap 'printf "\e[6 q"' EXIT
+
+# --- Predictive history search ------------------------------------------------
+# Up/Down arrows search history based on what's already typed (INSERT mode only)
+
+bind '"\e[A": history-search-backward'
+bind '"\e[B": history-search-forward'
+bind '"\eOA": history-search-backward'
+bind '"\eOB": history-search-forward'
+
+# In vi normal mode, k/j navigate history (readline default)
+
+# --- Completion ---------------------------------------------------------------
+
+if [[ -f /usr/share/bash-completion/bash_completion ]]; then
+    source /usr/share/bash-completion/bash_completion
+elif [[ -f /etc/bash_completion ]]; then
+    source /etc/bash_completion
+fi
+
+# --- Color-coded PS1 fallback -------------------------------------------------
+# Only used if Starship is not available
+
+_setup_ps1_fallback() {
+    local reset='\[\e[0m\]'
+    local bold='\[\e[1m\]'
+    local cyan='\[\e[36m\]'
+    local green='\[\e[32m\]'
+    local yellow='\[\e[33m\]'
+    local blue='\[\e[34m\]'
+    local red='\[\e[31m\]'
+
+    # Show container name if available
+    local container_info=""
+    if [[ -f /run/.containerenv ]]; then
+        local cname
+        cname=$(grep -oP '(?<=name=")[^"]+' /run/.containerenv 2>/dev/null || echo "container")
+        container_info="${yellow}[${cname}]${reset} "
+    fi
+
+    PS1="${bold}${cyan}\u${reset}@${green}\h${reset} ${container_info}${blue}\w${reset}\n❯ "
+}
+
+# --- Prompt (Starship preferred, PS1 fallback) ---------------------------------
+
+if command -v starship &>/dev/null; then
+    eval "$(starship init bash)"
+else
+    _setup_ps1_fallback
+fi
+
+# --- Zoxide (smarter cd) ------------------------------------------------------
+
+if command -v zoxide &>/dev/null; then
+    eval "$(zoxide init bash --cmd cd)"
+fi
+
+# --- Aliases ------------------------------------------------------------------
+
+# Use eza if available, fall back to ls with color
+if command -v eza &>/dev/null; then
+    alias l='eza -lh --group-directories-first --icons=auto --git'
+    alias la='eza -la'
+    alias ll='eza -lah --icons --group-directories-first'
+    alias lt='eza --tree --icons --git --level=3'
+else
+    alias l='ls -lh --color=auto'
+    alias la='ls -lah --color=auto'
+    alias ll='ls -lah --color=auto'
+fi
+
+alias grep='grep --color=auto'
+
+# Use bat if available
+if command -v bat &>/dev/null; then
+    alias cat='bat --style=plain'
+fi
+
+# --- FZF ----------------------------------------------------------------------
+
+if command -v fzf &>/dev/null; then
+    # Tokyo Night / Catppuccin Mocha color scheme (matches Mac-side config)
+    export FZF_DEFAULT_OPTS="
+    --layout=reverse
+    --bind='ctrl-e:execute(nvim {})+abort'
+    --bind 'ctrl-a:select-all'
+    --info=inline-right
+    --color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc,hl:#f38ba8
+    --color=fg:#cdd6f4,header:#f38ba8,info:#cba6f7,pointer:#f5e0dc
+    --color=marker:#b4befe,fg+:#cdd6f4,prompt:#cba6f7,hl+:#f38ba8"
+
+    if command -v rg &>/dev/null; then
+        export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!.git/*"'
+    fi
+
+    # Load fzf key bindings if available
+    if [[ -f /usr/share/fzf/key-bindings.bash ]]; then
+        source /usr/share/fzf/key-bindings.bash
+    fi
+    if [[ -f /usr/share/fzf/completion.bash ]]; then
+        source /usr/share/fzf/completion.bash
+    fi
+fi
+
+# --- Editor -------------------------------------------------------------------
+
+export EDITOR='nvim'
+export VISUAL='nvim'
+
+# --- Path additions -----------------------------------------------------------
+
+[[ -d "$HOME/.local/bin" ]] && export PATH="$HOME/.local/bin:$PATH"
+[[ -d "$HOME/.cargo/bin" ]] && export PATH="$HOME/.cargo/bin:$PATH"

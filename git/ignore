@@ -1,0 +1,114 @@
+# ============================================================
+# Global gitignore — applied to all repos on this machine
+# via core.excludesFile = ~/.config/git/ignore
+# ============================================================
+
+# ------------------------------------------------------------
+# macOS
+# ------------------------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+.AppleDouble
+.LSOverride
+Icon
+
+# ------------------------------------------------------------
+# Linux
+# ------------------------------------------------------------
+*~
+.directory
+.Trash-*
+
+# ------------------------------------------------------------
+# IDEs & editors
+# ------------------------------------------------------------
+# VSCode
+.vscode/
+*.code-workspace
+
+# JetBrains (IDEA, CLion, GoLand, etc.)
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Vim / Neovim
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+Session.vim
+Sessionx.vim
+.netrwhist
+tags
+
+# ------------------------------------------------------------
+# Language toolchain artifacts
+# ------------------------------------------------------------
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+dist/
+build/
+*.egg
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Rust
+target/
+
+# Go
+vendor/
+
+# .NET
+bin/
+obj/
+*.user
+
+# ------------------------------------------------------------
+# Environment & secrets (NEVER commit these)
+# ------------------------------------------------------------
+.env
+.env.*
+!.env.example
+!.env.sample
+.envrc
+*.pem
+*.key
+*.p12
+*.pfx
+.bw_session
+
+# ------------------------------------------------------------
+# Logs & temp files
+# ------------------------------------------------------------
+*.log
+*.tmp
+*.temp
+*.bak
+*.orig
+*.swp
+*.swo
+
+# ------------------------------------------------------------
+# Container / infra
+# ------------------------------------------------------------
+.terraform/
+*.tfstate
+*.tfstate.*
+.vagrant/

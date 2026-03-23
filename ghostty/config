@@ -1,0 +1,25 @@
+# Font
+font-family = "CaskaydiaCove Nerd Font Mono"
+font-size = 13
+
+# Mouse
+mouse-hide-while-typing = true
+
+# Window
+window-padding-x = 8
+window-padding-y = 4
+
+# Shell integration
+shell-integration = detect
+shell-integration-features = cursor,sudo,title
+
+# Terminal compatibility (important for tmux)
+term = xterm-256color
+
+# Theme
+theme = tokyonight_night
+
+# Keybindings — tmux pane/window navigation
+# prefix is C-a (set in tmux config)
+keybind = ctrl+shift+t=new_tab
+keybind = ctrl+shift+w=close_surface
