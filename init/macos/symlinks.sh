@@ -39,3 +39,12 @@ make_symlink "$HOME/.config/zsh/.zshrc"    "$HOME/.zshrc"
 make_symlink "$HOME/.config/zsh/.zprofile" "$HOME/.zprofile"
 make_symlink "$HOME/.config/zsh/.zshenv"   "$HOME/.zshenv"
 make_symlink "$HOME/.config/tmux/tmux.conf" "$HOME/.tmux.conf"
+
+# ── Taskwarrior hook permissions ──────────────────────────────────────────────
+TIMEW_HOOK="$HOME/.config/task/hooks/on-modify.timewarrior"
+if [[ -f "$TIMEW_HOOK" ]]; then
+    chmod +x "$TIMEW_HOOK"
+    success "Made $TIMEW_HOOK executable."
+else
+    info "Timewarrior hook not found at $TIMEW_HOOK — skipping chmod (dotfiles not yet checked out?)."
+fi

@@ -1,6 +1,3 @@
-data.location=/Users/jpulk/.task
-news.version=3.4.0
-
 data.location=~/.local/share/task
 hooks.location=~/.config/task/hooks
 
