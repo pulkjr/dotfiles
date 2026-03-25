@@ -62,12 +62,28 @@ fi
 # Set to 'true' to opt out of sending usage data to Microsoft
 # export DOTNET_CLI_TELEMETRY_OPTOUT=true
 
-# User podman for docker
-export DOCKER_PATH=$(which podman)
-export DOCKER_HOST=$(which podman)
+# Use podman as the Docker-compatible runtime
+# DOCKER_HOST must be a unix socket URI, not a binary path
+if command -v podman &>/dev/null; then
+  export DOCKER_PATH="$(command -v podman)"
+  if [[ "$(uname)" == "Darwin" ]]; then
+    # macOS: podman machine exposes a socket via the default machine
+    export DOCKER_HOST="unix://${HOME}/.local/share/containers/podman/machine/qemu/podman.sock"
+  else
+    # Linux: rootless podman socket via systemd user session
+    export DOCKER_HOST="unix:///run/user/${UID}/podman/podman.sock"
+  fi
+fi
 
-# Bitwarden — source session token if saved from previous unlock
-if [[ -f "$HOME/.bw_session" ]]; then
+# Bitwarden — restore session token from previous unlock
+if [[ "$(uname)" == "Darwin" ]]; then
+  # macOS: read from Keychain (never touches disk as plaintext)
+  if _bw_session=$(security find-generic-password -w -s "bitwarden-session" -a "$USER" 2>/dev/null); then
+    export BW_SESSION="$_bw_session"
+  fi
+  unset _bw_session
+elif [[ -f "$HOME/.bw_session" ]]; then
+  # Linux: read from file, ensure permissions are still tight
   chmod 600 "$HOME/.bw_session"
-  export BW_SESSION="$(cat "$HOME/.bw_session")"
+  export BW_SESSION="$(< "$HOME/.bw_session")"
 fi

@@ -16,8 +16,11 @@ TMUX_CONF="$HOME/.config/tmux/tmux.conf"
 
 if [[ -d "$TPM_DIR/.git" ]]; then
     info "TPM already cloned. Pulling latest..."
-    git -C "$TPM_DIR" pull
-    success "TPM updated."
+    if git -C "$TPM_DIR" pull; then
+        success "TPM updated."
+    else
+        error "Failed to pull TPM (network/SSH issue). Skipping."
+    fi
 else
     info "Cloning TPM..."
     git clone https://github.com/tmux-plugins/tpm "$TPM_DIR"
@@ -39,12 +42,14 @@ TMUX_PLUGIN_MANAGER_PATH="$HOME/.config/tmux/plugins" \
 tmux kill-session -t _tpm_setup_ 2>/dev/null || true
 
 # ── oh-my-zsh ────────────────────────────────────────────────────────────────
+# Use git clone instead of curl|sh: HTTPS transport provides integrity, avoids
+# piping untrusted remote scripts directly into a shell.
 OMZ_DIR="$HOME/.config/zsh/oh-my-zsh"
 if [[ -d "$OMZ_DIR" ]]; then
     success "oh-my-zsh already installed at $OMZ_DIR. Skipping."
 else
-    info "Installing oh-my-zsh..."
-    ZSH="$OMZ_DIR" sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+    info "Installing oh-my-zsh via git clone..."
+    git clone --depth=1 https://github.com/ohmyzsh/ohmyzsh.git "$OMZ_DIR"
     success "oh-my-zsh installed."
 fi
 
@@ -76,43 +81,41 @@ if command -v minikube >/dev/null 2>&1; then
     minikube config set driver podman
     success "minikube driver set to podman."
 
-    echo ""
-    echo -e "${YELLOW}Podman machine setup is required for minikube to work correctly."
-    echo "This will: stop & remove any existing Podman machine, then create a new one"
-    echo -e "with 4 CPUs, 8096MB RAM, 60GB disk, and start minikube.${RESET}"
-    echo ""
-    read -r -p "$(echo -e "${YELLOW}Set up Podman machine and start minikube now? [y/N]: ${RESET}")" setup_podman
-    if [[ "$setup_podman" =~ ^[Yy]$ ]]; then
-        info "Stopping and removing existing Podman machine (if any)..."
-        podman machine stop 2>/dev/null || true
-        podman machine rm --force 2>/dev/null || true
-
-        info "Creating Podman machine..."
-        podman machine init --cpus 4 --memory 8096 --disk-size 60
-        podman machine start
-        success "Podman machine started."
-
-        info "Starting minikube..."
-        minikube delete 2>/dev/null || true
-        minikube start --driver=podman --container-runtime=cri-o
-        success "minikube started."
+    # Only prompt for (destructive) machine setup if no machine exists yet.
+    # Skips on re-runs to avoid destroying a running podman machine or cluster.
+    if podman machine inspect 2>/dev/null | grep -q '"Name"'; then
+        success "Podman machine already initialized — skipping setup prompt."
     else
-        echo -e "${YELLOW}"
-        echo "════════════════════════════════════════════════════════"
-        echo " MANUAL STEP: Podman machine + minikube setup"
         echo ""
-        echo "   podman machine stop"
-        echo "   podman machine rm --force"
-        echo "   podman machine init --cpus 4 --memory 8096 --disk-size 60"
-        echo "   podman machine start"
-        echo "   minikube delete"
-        echo "   minikube start --driver=podman --container-runtime=cri-o"
+        echo -e "${YELLOW}Podman machine setup is required for minikube to work correctly."
+        echo "This will: create a new Podman machine with 4 CPUs, 8096MB RAM, 60GB disk,"
+        echo -e "and start minikube.${RESET}"
         echo ""
-        echo "   minikube does NOT start automatically — run"
-        echo "     minikube start"
-        echo "   each time you need it."
-        echo "════════════════════════════════════════════════════════"
-        echo -e "${RESET}"
+        read -r -p "$(echo -e "${YELLOW}Set up Podman machine and start minikube now? [y/N]: ${RESET}")" setup_podman
+        if [[ "$setup_podman" =~ ^[Yy]$ ]]; then
+            info "Creating Podman machine..."
+            podman machine init --cpus 4 --memory 8096 --disk-size 60
+            podman machine start
+            success "Podman machine started."
+
+            info "Starting minikube..."
+            minikube start --driver=podman --container-runtime=cri-o
+            success "minikube started."
+        else
+            echo -e "${YELLOW}"
+            echo "════════════════════════════════════════════════════════"
+            echo " MANUAL STEP: Podman machine + minikube setup"
+            echo ""
+            echo "   podman machine init --cpus 4 --memory 8096 --disk-size 60"
+            echo "   podman machine start"
+            echo "   minikube start --driver=podman --container-runtime=cri-o"
+            echo ""
+            echo "   minikube does NOT start automatically — run"
+            echo "     minikube start"
+            echo "   each time you need it."
+            echo "════════════════════════════════════════════════════════"
+            echo -e "${RESET}"
+        fi
     fi
 else
     info "minikube not installed. Skipping driver config."
@@ -122,8 +125,11 @@ fi
 CONTAINERS_DIR="$HOME/containers"
 if [[ -d "$CONTAINERS_DIR/.git" ]]; then
     info "containers repo already cloned. Pulling..."
-    git -C "$CONTAINERS_DIR" pull
-    success "containers repo updated."
+    if git -C "$CONTAINERS_DIR" pull; then
+        success "containers repo updated."
+    else
+        error "Failed to pull containers repo (network/SSH issue). Skipping."
+    fi
 else
     info "Cloning containers repo..."
     if git clone git@github.com:pulkjr/containers.git "$CONTAINERS_DIR"; then
@@ -137,8 +143,11 @@ fi
 LINUX_DOTFILES_DIR="$HOME/linux-dotfiles"
 if [[ -d "$LINUX_DOTFILES_DIR/.git" ]]; then
     info "linux-dotfiles repo already cloned. Pulling..."
-    git -C "$LINUX_DOTFILES_DIR" pull
-    success "linux-dotfiles repo updated."
+    if git -C "$LINUX_DOTFILES_DIR" pull; then
+        success "linux-dotfiles repo updated."
+    else
+        error "Failed to pull linux-dotfiles repo (network/SSH issue). Skipping."
+    fi
 else
     info "Cloning linux-dotfiles repo..."
     if git clone git@github.com:pulkjr/linux-dotfiles.git "$LINUX_DOTFILES_DIR"; then

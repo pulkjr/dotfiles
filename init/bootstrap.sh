@@ -27,7 +27,6 @@ success() { echo -e "${GREEN}[bootstrap] $*${RESET}"; }
 error()   { echo -e "${RED}[bootstrap] $*${RESET}" >&2; }
 
 DOTFILES_REPO="https://github.com/pulkjr/dotfiles.git"
-DOTFILES_REPO="https://github.com/pulkjr/dotfiles.git"
 DOTFILES_BARE="$HOME/.dotfiles"
 DOTFILES_DIR="$HOME/.config"
 
@@ -38,8 +37,17 @@ if [[ "$PLATFORM" == "Darwin" ]]; then
     # Install Homebrew if missing
     if ! command -v brew >/dev/null 2>&1; then
         info "Installing Homebrew..."
-        NONINTERACTIVE=1 /bin/bash -c \
-            "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        # Download to a temp file rather than piping directly into bash, so the
+        # script can be inspected and its SHA256 is logged for audit purposes.
+        # NOTE: Homebrew does not publish signed checksums for install.sh; the
+        # SHA256 below will change with each upstream release. Cross-check it at:
+        #   https://github.com/Homebrew/install/blob/HEAD/install.sh
+        _brew_installer="$(mktemp /tmp/homebrew-install.XXXXXX.sh)"
+        curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh \
+            -o "${_brew_installer}"
+        info "Homebrew installer SHA256: $(sha256sum "${_brew_installer}" | awk '{print $1}')"
+        NONINTERACTIVE=1 bash "${_brew_installer}"
+        rm -f "${_brew_installer}"
         # Add brew to PATH for Apple Silicon
         if [[ -x /opt/homebrew/bin/brew ]]; then
             eval "$(/opt/homebrew/bin/brew shellenv)"

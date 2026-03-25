@@ -1,13 +1,13 @@
 # NOTEBOOK SETTINGS
 [notebook]
-dir = "~/git/Personal/dailyZK"
+dir = "{{env ZK_NOTEBOOK_DIR}}"
 
 [note]
 filename = "{{title}}"
 
 # EXTRA VARIABLES
 [extra]
-author = "pulk"
+author = "{{env ZK_AUTHOR}}"
 
 # EXTERNAL TOOLS
 [tool]

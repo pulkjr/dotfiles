@@ -37,6 +37,14 @@ curl -fsSL https://raw.githubusercontent.com/pulkjr/dotfiles/main/init/bootstrap
 > as a bare repo to `~/.dotfiles`, checks out files into `~/.config`, then reminds
 > you to switch the remote to SSH once your key is enrolled.
 
+> **Security note:** If you prefer to inspect the script before running it:
+> ```bash
+> curl -fsSL https://raw.githubusercontent.com/pulkjr/dotfiles/main/init/bootstrap.sh \
+>     -o /tmp/bootstrap.sh
+> # Review the script, then run:
+> bash /tmp/bootstrap.sh
+> ```
+
 See [`docs/mac-setup.md`](docs/mac-setup.md) and [`docs/linux-setup.md`](docs/linux-setup.md) for full step-by-step guides.
 
 ---

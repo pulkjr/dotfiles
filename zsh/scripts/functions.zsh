@@ -104,16 +104,18 @@ cdev() {
   local image="${1:?Usage: cdev <image> [dir]}"
   local target_dir="${2:-$PWD}"
   local window_name="${image##*/}"   # strip registry prefix for window name
-  local run_cmd="podman run -it --rm \
-    -v '$target_dir':/projects \
-    -v '$HOME/linux-dotfiles/':/home/dev/.config \
-    -v '$HOME/linux-local':/home/dev/.local/ \
-    -v '$HOME/linux-dotfiles/bash/bashrc':/home/dev/.bashrc \
-    $image"
+  local -a run_args=(
+    podman run -it --rm
+    -v "${target_dir}:/projects"
+    -v "${HOME}/linux-dotfiles/:/home/dev/.config"
+    -v "${HOME}/linux-local:/home/dev/.local/"
+    -v "${HOME}/linux-dotfiles/bash/bashrc:/home/dev/.bashrc"
+    "$image"
+  )
   if tmux has-session 2>/dev/null; then
-    tmux new-window -n "$window_name" "$run_cmd"
+    tmux new-window -n "$window_name" "${run_args[*]}"
   else
-    eval "$run_cmd"
+    "${run_args[@]}"
   fi
 }
 
@@ -199,8 +201,9 @@ bw-login() {
 }
 
 # Unlock Bitwarden and export session token.
-# On macOS, tries master password from Keychain first (silent unlock).
-# Persists session to ~/.bw_session so new shells auto-load it (see exports.zsh).
+# On macOS, tries master password from Keychain first (silent unlock),
+# then persists the session token to Keychain (not a plaintext file).
+# On Linux, falls back to ~/.bw_session created with umask 077.
 #   Usage: bwu
 bwu() {
   local session
@@ -219,10 +222,19 @@ bwu() {
   fi
 
   export BW_SESSION="$session"
-  # Persist so new shells pick it up automatically via exports.zsh
-  printf '%s' "$session" > "$HOME/.bw_session"
-  chmod 600 "$HOME/.bw_session"
-  echo "Bitwarden unlocked. BW_SESSION exported and persisted to ~/.bw_session."
+
+  if [[ "$(uname)" == "Darwin" ]]; then
+    # Store in Keychain — no plaintext file on disk
+    security add-generic-password -U -s "bitwarden-session" -a "$USER" -w "$session" 2>/dev/null \
+      && echo "Bitwarden unlocked. BW_SESSION exported and stored in Keychain." \
+      || echo "Bitwarden unlocked. BW_SESSION exported (Keychain write failed — session not persisted)."
+    # Remove legacy plaintext file if it exists
+    [[ -f "$HOME/.bw_session" ]] && rm -f "$HOME/.bw_session"
+  else
+    # Linux: write with umask 077 so the file is created 600 from the start
+    (umask 077 && printf '%s' "$session" > "$HOME/.bw_session")
+    echo "Bitwarden unlocked. BW_SESSION exported and persisted to ~/.bw_session."
+  fi
 }
 
 # Inject a Bitwarden secret as an env var into a container function call

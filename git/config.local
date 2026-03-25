@@ -1,3 +1,5 @@
+# This file is written by init/setup.sh and is gitignored — do not commit it.
+# To regenerate: bash ~/.config/init/setup.sh
 [user]
-  name = Joseph
-  email = pulkjr@gmail.com
+  name = Your Name
+  email = your@email.example

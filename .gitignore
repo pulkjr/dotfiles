@@ -1,2 +1,8 @@
-/zsh/.zcompdump-jpulk-mac-0-5.9
-/zsh/.zcompdump-jpulk-mac-0-5.9
+zsh/.zcompdump*
+zsh/.zsh_history
+zsh/.zsh_sessions/
+containers/podman-connections.json
+containers/podman-connections.json.lock
+containers/podman/machine/
+git/config.local
+git/allowed_signers

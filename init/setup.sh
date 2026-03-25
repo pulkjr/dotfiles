@@ -12,21 +12,129 @@ error()   { echo -e "${RED}[setup] $*${RESET}" >&2; }
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# ── Shared: configure git local identity ─────────────────────────────────────
+# ── Shared: configure git identities ─────────────────────────────────────────
+# Writes three gitignored identity files:
+#   ~/.config/git/config.local       — default fallback for all repos
+#   ~/projects/work/.gitconfig       — work identity (via includeIf in git/config)
+#   ~/projects/personal/.gitconfig   — personal identity (via includeIf in git/config)
+#
+# Idempotent: each file is only written if it does not already exist.
+# Re-running setup.sh on a configured machine skips any file already present.
 configure_git() {
     local config_dir="$HOME/.config/git"
-    local config_file="$config_dir/config.local"
+    local work_dir="$HOME/projects/work"
+    local personal_dir="$HOME/projects/personal"
+    mkdir -p "$config_dir" "$work_dir" "$personal_dir"
 
-    read -r -p "Enter your Git username: " git_username
-    read -r -p "Enter your Git email: " git_email
+    local need_default=false need_work=false need_personal=false need_key=false
 
-    mkdir -p "$config_dir"
-    cat > "$config_file" <<EOF
+    [[ ! -f "$config_dir/config.local"   ]] && need_default=true
+    [[ ! -f "$work_dir/.gitconfig"       ]] && need_work=true
+    [[ ! -f "$personal_dir/.gitconfig"   ]] && need_personal=true
+
+    # Nothing to do
+    if ! $need_default && ! $need_work && ! $need_personal; then
+        success "Git identities already configured — skipping."
+        success "  default  → $config_dir/config.local"
+        success "  work     → $work_dir/.gitconfig"
+        success "  personal → $personal_dir/.gitconfig"
+        return
+    fi
+
+    echo ""
+    info "── Git identities ───────────────────────────────────────────"
+    info "These files are gitignored and never committed."
+    info "Skipping any identity file that already exists."
+    echo ""
+
+    # ── SSH key — shared by work and personal (one YubiKey) ──────────────────
+    # Only prompt if at least one identity file needs writing
+    if $need_work || $need_personal; then
+        need_key=true
+    fi
+
+    local _ssh_pubkey_path="" _ssh_pubkey=""
+    if $need_key; then
+        read -r -p "  SSH public key file (e.g. ~/.ssh/id_ed25519_sk.pub): " _ssh_pubkey_path
+        _ssh_pubkey_path="${_ssh_pubkey_path/#\~/$HOME}"
+        if [[ -f "$_ssh_pubkey_path" ]]; then
+            _ssh_pubkey="$(cat "$_ssh_pubkey_path")"
+        else
+            error "Key file not found: $_ssh_pubkey_path — signingKey will need to be set manually."
+        fi
+    fi
+
+    # ── Default (fallback) identity ───────────────────────────────────────────
+    if $need_default; then
+        info "Default identity (fallback for repos outside work/ and personal/):"
+        read -r -p "  Name  : " _default_name
+        read -r -p "  Email : " _default_email
+        cat > "$config_dir/config.local" <<EOF
 [user]
-  name = $git_username
-  email = $git_email
+  name = ${_default_name}
+  email = ${_default_email}
 EOF
-    success "Git user config written to $config_file"
+        success "Default identity → $config_dir/config.local"
+    else
+        success "Default identity already exists — skipping."
+    fi
+
+    # ── Work identity ─────────────────────────────────────────────────────────
+    if $need_work; then
+        echo ""
+        info "Work identity (repos under ~/projects/work/):"
+        read -r -p "  Name  : " _work_name
+        read -r -p "  Email : " _work_email
+        cat > "$work_dir/.gitconfig" <<EOF
+[user]
+  name = ${_work_name}
+  email = ${_work_email}
+  signingKey = ${_ssh_pubkey_path}
+[gpg]
+  format = ssh
+# TODO: once your corporate S/MIME code-signing cert is issued, replace the
+# [gpg] block above with:
+#   [gpg]
+#     format = x509
+#   [gpg "x509"]
+#     program = smimesign
+# and remove the signingKey line — smimesign reads the cert from Keychain automatically.
+EOF
+        success "Work identity → $work_dir/.gitconfig"
+    else
+        success "Work identity already exists — skipping."
+    fi
+
+    # ── Personal identity ─────────────────────────────────────────────────────
+    if $need_personal; then
+        echo ""
+        info "Personal identity (repos under ~/projects/personal/):"
+        read -r -p "  Name  : " _personal_name
+        read -r -p "  Email : " _personal_email
+        cat > "$personal_dir/.gitconfig" <<EOF
+[user]
+  name = ${_personal_name}
+  email = ${_personal_email}
+  signingKey = ${_ssh_pubkey_path}
+[gpg]
+  format = ssh
+EOF
+        success "Personal identity → $personal_dir/.gitconfig"
+    else
+        success "Personal identity already exists — skipping."
+    fi
+
+    # ── allowed_signers — append new entries, skip duplicates ────────────────
+    local signers_file="$config_dir/allowed_signers"
+    touch "$signers_file"
+    if [[ -n "$_ssh_pubkey" ]]; then
+        for _entry in "${_work_email:-} ${_ssh_pubkey}" "${_personal_email:-} ${_ssh_pubkey}"; do
+            if [[ -n "${_entry// }" ]] && ! grep -qF "$_ssh_pubkey" "$signers_file" 2>/dev/null; then
+                echo "$_entry" >> "$signers_file"
+            fi
+        done
+        success "allowed_signers → $signers_file"
+    fi
 }
 
 # ── Source helper: make scripts executable before sourcing ───────────────────

@@ -2,7 +2,7 @@
 
 # Ensure starship cache dir exists with correct permissions
 mkdir -p "$HOME/.cache/starship"
-chmod 755 "$HOME/.cache/starship"
+chmod 700 "$HOME/.cache/starship"
 
 printf "\nApplying macOS Dock settings...\n"
 

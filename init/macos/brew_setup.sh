@@ -15,7 +15,17 @@ if command -v brew >/dev/null 2>&1; then
     success "Homebrew already installed: $(brew --version | head -1)"
 else
     info "Homebrew not found. Installing..."
-    NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    # Download to a temp file rather than piping directly into bash, so the
+    # script can be inspected and its SHA256 is logged for audit purposes.
+    # NOTE: Homebrew does not publish signed checksums for install.sh; the
+    # SHA256 below will change with each upstream release. Cross-check it at:
+    #   https://github.com/Homebrew/install/blob/HEAD/install.sh
+    _brew_installer="$(mktemp /tmp/homebrew-install.XXXXXX.sh)"
+    curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh \
+        -o "${_brew_installer}"
+    info "Homebrew installer SHA256: $(sha256sum "${_brew_installer}" | awk '{print $1}')"
+    NONINTERACTIVE=1 bash "${_brew_installer}"
+    rm -f "${_brew_installer}"
     success "Homebrew installed."
 fi
 

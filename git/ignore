@@ -93,6 +93,7 @@ obj/
 *.p12
 *.pfx
 .bw_session
+config.local
 
 # ------------------------------------------------------------
 # Logs & temp files
