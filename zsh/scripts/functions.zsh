@@ -85,16 +85,26 @@ _container_dirs_ok() {
 }
 
 # Enter the nvim-base container for editing
-# Usage: nvim [directory]  — defaults to current directory
+# Usage: nvim [file]  — mounts pwd as /projects; opens file at its container path if given
 nvim() {
   _container_dirs_ok || return 1
-  local target_dir="${1:-$PWD}"
+  local file="${1:-}"
+  local nvim_target="."
+  if [[ -n "$file" ]]; then
+    local rel
+    if [[ "$file" = /* ]]; then
+      rel="${file#$PWD/}"
+    else
+      rel="${file#./}"
+    fi
+    nvim_target="/projects/$rel"
+  fi
   podman run -it --rm \
-    -v "$target_dir":/projects \
+    -v "$PWD":/projects \
     -v "$HOME/linux-dotfiles/":/home/dev/.config \
     -v "$HOME/linux-local":/home/dev/.local/ \
     -v "$HOME/linux-dotfiles/bash/bashrc":/home/dev/.bashrc \
-    nvim-base nvim .
+    nvim-base nvim "$nvim_target"
 }
 
 # Open any container image in a new named tmux window (or standalone if not in tmux)
@@ -324,10 +334,24 @@ copilot-store-token() {
 # Enter the copilot container
 # Injects GH_TOKEN from env (if set) or fetches it from Bitwarden item 'github-copilot-token'.
 # Prerequisites: run bwu first so BW_SESSION is set, or export GH_TOKEN manually.
-#   Usage: copilot [directory]
+#   Usage: copilot [version] [directory]
+#     version: "dotnet" (default) or "rust"
+#     directory: path to mount as /projects (defaults to $PWD)
 copilot() {
   _container_dirs_ok || return 1
-  local target_dir="${1:-$PWD}"
+
+  local version="dotnet"
+  local target_dir="$PWD"
+
+  # Parse args: first arg is version if it matches a known variant, otherwise treat as directory
+  for arg in "$@"; do
+    case "$arg" in
+      dotnet|rust) version="$arg" ;;
+      *) target_dir="$arg" ;;
+    esac
+  done
+
+  local image="localhost/copilot-${version}-final"
 
   local gh_token="${GH_TOKEN:-}"
 
@@ -344,8 +368,9 @@ copilot() {
 
   podman run -it --rm \
     -e GH_TOKEN="$gh_token" \
-    -v "$target_dir":/projects \
-    -v "$HOME/linux-dotfiles/":/home/dev/.config \
-    -v "$HOME/linux-dotfiles/bash/bashrc":/home/dev/.bashrc \
-    localhost/copilot
+    -v "$target_dir":/projects:rw \
+    -v "$HOME/linux-dotfiles/":/home/dev/.config:ro \
+    -v "$HOME/linux-dotfiles/bash/bashrc":/home/dev/.bashrc:ro \
+    -v "$HOME/linux-local":/home/dev/.local/:ro \
+    "$image"
 }

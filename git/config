@@ -3,7 +3,7 @@
 	ol = log --pretty=oneline
 	olg = log --graph --decorate --pretty=oneline --abbrev-commit --all
 [core]
-	editor = nvim
+	editor = vim
 	pager = bat
 	excludesFile = ~/.config/git/ignore
 [init]

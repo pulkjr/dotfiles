@@ -87,3 +87,6 @@ elif [[ -f "$HOME/.bw_session" ]]; then
   chmod 600 "$HOME/.bw_session"
   export BW_SESSION="$(< "$HOME/.bw_session")"
 fi
+
+# Ignore husky on atomic workstation zsh
+export HUSKY_SKIP_HOOKS=1
