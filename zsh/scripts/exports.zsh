@@ -3,6 +3,10 @@ source <(fzf --zsh)
 
 export TMPDIR=/tmp
 
+# Point starship at the config file (default search path is ~/.config/starship.toml,
+# but our config lives in the starship/ subdirectory)
+export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
+
 #Use fzf-tmux
 export FZF_TMUX=1
 

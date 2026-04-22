@@ -1,59 +1,65 @@
 add_newline = true
 
 format = """
-$username$hostname$container$directory$git_branch$git_status$nodejs$python$rust$dotnet$cmd_duration$status
+$username$hostname${env_var.CONTAINER_IMAGE}${env_var.CONTAINER_PROJECT}$directory$git_branch$git_status$nodejs$python$rust$dotnet$cmd_duration$time$status
 $character"""
 
 [character]
-success_symbol = "[❯](bold #7dcfff)"
-error_symbol = "[❯](bold #f7768e)"
-vicmd_symbol = "[❮](bold #9ece6a)"
+success_symbol = "[❯](bold #61afef)" # Blue
+error_symbol = "[❯](bold #e06c75)"   # Red
+vicmd_symbol = "[❮](bold #98c379)"   # Green
 
 [directory]
-style = "bold #7aa2f7"
+style = "bold #61afef"               # Blue
 truncation_length = 3
 truncate_to_repo = true
 
 [git_branch]
 symbol = " "
-style = "bold #9ece6a"
+style = "bold #98c379"               # Green
 
 [git_status]
-style = "bold #f7768e"
-
-[container]
-symbol = "⬡ "
-style = "bold #e0af68"
+style = "bold #e06c75"               # Red
 
 [username]
 show_always = false
-style_user = "bold #bb9af7"
+style_user = "bold #c678dd"          # Purple
 
 [hostname]
 ssh_only = true
-style = "bold #7dcfff"
+style = "bold #61afef"               # Blue
+format = "[@$hostname](bold #61afef) "
 
-[nodejs]
-detect_files = ["package.json", ".node-version"]
+# Container image name
+[env_var.CONTAINER_IMAGE]
+variable = "CONTAINER_IMAGE"
+symbol = "⬡ "
+style = "bold #d19a66"               # Orange
+format = "[$symbol$env_value]($style) "
 
-[python]
-detect_files = ["requirements.txt", "pyproject.toml", ".python-version", "setup.py"]
-
-[rust]
-detect_files = ["Cargo.toml"]
-
-[dotnet]
-detect_files = ["*.csproj", "*.fsproj", "global.json"]
+# Container project name
+[env_var.CONTAINER_PROJECT]
+variable = "CONTAINER_PROJECT"
+symbol = " \ueb46 "
+style = "bold #e5c07b"               # Yellow/Gold
+format = "[$symbol$env_value]($style) "
 
 [cmd_duration]
 min_time = 2000
-style = "bold #e0af68"
+style = "bold #d19a66"               # Orange
 
 [status]
 disabled = false
-style = "bold #f7768e"
+style = "bold #e06c75"               # Red
 symbol = "✘ "
 format = "[$symbol$status]($style) "
 
-[time]
-disabled = true
+# Languages (Detectors)
+[nodejs]
+detect_files = ["package.json", ".node-version"]
+[python]
+detect_files = ["requirements.txt", "pyproject.toml", ".python-version", "setup.py"]
+[rust]
+detect_files = ["Cargo.toml"]
+[dotnet]
+detect_files = ["*.csproj", "*.fsproj", "global.json"]

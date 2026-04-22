@@ -100,6 +100,9 @@ nvim() {
     nvim_target="/projects/$rel"
   fi
   podman run -it --rm \
+    -w /projects \
+    -e CONTAINER_IMAGE=nvim-base \
+    -e "CONTAINER_PROJECT=$(basename "$PWD")" \
     -v "$PWD":/projects \
     -v "$HOME/linux-dotfiles/":/home/dev/.config \
     -v "$HOME/linux-local":/home/dev/.local/ \
@@ -116,6 +119,9 @@ cdev() {
   local window_name="${image##*/}"   # strip registry prefix for window name
   local -a run_args=(
     podman run -it --rm
+    -w /projects
+    -e "CONTAINER_IMAGE=${image}"
+    -e "CONTAINER_PROJECT=$(basename "${target_dir}")"
     -v "${target_dir}:/projects"
     -v "${HOME}/linux-dotfiles/:/home/dev/.config"
     -v "${HOME}/linux-local:/home/dev/.local/"
@@ -123,7 +129,9 @@ cdev() {
     "$image"
   )
   if tmux has-session 2>/dev/null; then
-    tmux new-window -n "$window_name" "${run_args[*]}"
+    tmux new-window -n "$window_name"
+    tmux set-window-option automatic-rename off
+    tmux send-keys "${run_args[*]}" Enter
   else
     "${run_args[@]}"
   fi
@@ -264,12 +272,29 @@ bw-inject() {
 dotnet() {
   _container_dirs_ok || return 1
   local target_dir="${1:-$PWD}"
-  podman run -it --rm \
-    -v "$target_dir":/projects \
-    -v "$HOME/linux-dotfiles/":/home/dev/.config \
-    -v "$HOME/linux-local":/home/dev/.local/ \
-    -v "$HOME/linux-dotfiles/bash/bashrc":/home/dev/.bashrc \
+    podman run -it --rm \
+    -w /projects \
+    -e CONTAINER_IMAGE=dotnet \
+    -e "CONTAINER_PROJECT=$(basename "${target_dir}")" \
+    -v "${target_dir}:/projects" \
+    -v "${HOME}/linux-dotfiles/:/home/dev/.config" \
+    -v "${HOME}/linux-local:/home/dev/.local/" \
+    -v "${HOME}/linux-dotfiles/bash/bashrc:/home/dev/.bashrc" \
     dotnet
+}
+# Enter a rust container
+rust() {
+  _container_dirs_ok || return 1
+  local target_dir="${1:-$PWD}"
+    podman run -it --rm \
+    -w /projects \
+    -e CONTAINER_IMAGE=rust \
+    -e "CONTAINER_PROJECT=$(basename "${target_dir}")" \
+    -v "${target_dir}:/projects" \
+    -v "${HOME}/linux-dotfiles/:/home/dev/.config" \
+    -v "${HOME}/linux-local:/home/dev/.local/" \
+    -v "${HOME}/linux-dotfiles/bash/bashrc:/home/dev/.bashrc" \
+    rust
 }
 # One-time setup: store your GitHub Personal Access Token in Bitwarden.
 # The copilot() function reads this token automatically when you launch the container.
@@ -366,11 +391,14 @@ copilot() {
       || { echo "copilot: 'github-copilot-token' not found in Bitwarden. Run: copilot-store-token"; return 1; }
   fi
 
-  podman run -it --rm \
-    -e GH_TOKEN="$gh_token" \
-    -v "$target_dir":/projects:rw \
-    -v "$HOME/linux-dotfiles/":/home/dev/.config:ro \
-    -v "$HOME/linux-dotfiles/bash/bashrc":/home/dev/.bashrc:ro \
-    -v "$HOME/linux-local":/home/dev/.local/:ro \
+  local window_name="copilot-${version}"
+    podman run -it --rm --cap-drop=all --security-opt no-new-privileges \
+    -w /projects \
+    -e "GH_TOKEN=${gh_token}" \
+    -e "CONTAINER_IMAGE=copilot-${version}" \
+    -e "CONTAINER_PROJECT=$(basename "${target_dir}")" \
+    -v "${target_dir}:/projects:rw" \
+    -v "${HOME}/linux-dotfiles/:/home/dev/.config:ro" \
+    -v "${HOME}/linux-dotfiles/bash/bashrc:/home/dev/.bashrc:ro" \
     "$image"
 }

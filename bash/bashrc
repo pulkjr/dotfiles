@@ -67,6 +67,41 @@ elif [[ -f /etc/bash_completion ]]; then
     source /etc/bash_completion
 fi
 
+# --- Container context --------------------------------------------------------
+# Print a greeting banner on interactive startup inside a container.
+# Reads CONTAINER_IMAGE and CONTAINER_PROJECT injected by the launcher functions
+# in zsh/scripts/functions.zsh. Falls back gracefully when vars are absent.
+
+_container_banner() {
+    # Only fire in interactive shells inside a container
+    [[ $- != *i* ]] && return
+    [[ -z "${CONTAINER_IMAGE:-}" && ! -f /run/.containerenv ]] && return
+
+    local reset='\e[0m'
+    local bold='\e[1m'
+    local amber='\e[38;5;214m'
+    local blue='\e[38;5;111m'
+    local cyan='\e[38;5;117m'
+    local dim='\e[2m'
+
+    local image="${CONTAINER_IMAGE:-unknown}"
+    local project="${CONTAINER_PROJECT:-$(basename "$PWD")}"
+    local host
+    host="${HOSTNAME:-$(< /etc/hostname)}"
+
+    printf '\n'
+    printf "${bold}${amber}  ⬡  container:${reset} ${bold}%s${reset}\n" "$image"
+    printf "${bold}${blue}  󰉋  project:  ${reset} ${bold}%s${reset}\n" "$project"
+    printf "${dim}${cyan}     host:     %s${reset}\n" "$host"
+    printf '\n'
+}
+
+# Re-print container context on demand
+cinfo() { _container_banner; }
+
+_container_banner
+
+
 # --- Color-coded PS1 fallback -------------------------------------------------
 # Only used if Starship is not available
 
@@ -77,11 +112,13 @@ _setup_ps1_fallback() {
     local green='\[\e[32m\]'
     local yellow='\[\e[33m\]'
     local blue='\[\e[34m\]'
-    local red='\[\e[31m\]'
 
-    # Show container name if available
+    # Show container image name if available (prefer CONTAINER_IMAGE env var,
+    # fall back to parsing /run/.containerenv as a last resort)
     local container_info=""
-    if [[ -f /run/.containerenv ]]; then
+    if [[ -n "${CONTAINER_IMAGE:-}" ]]; then
+        container_info="${yellow}[${CONTAINER_IMAGE}]${reset} "
+    elif [[ -f /run/.containerenv ]]; then
         local cname
         cname=$(grep -oP '(?<=name=")[^"]+' /run/.containerenv 2>/dev/null || echo "container")
         container_info="${yellow}[${cname}]${reset} "
@@ -93,6 +130,9 @@ _setup_ps1_fallback() {
 # --- Prompt (Starship preferred, PS1 fallback) ---------------------------------
 
 if command -v starship &>/dev/null; then
+    # Point starship at the config file (default search path is ~/.config/starship.toml,
+    # but the config lives in the starship/ subdirectory)
+    export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
     eval "$(starship init bash)"
 else
     _setup_ps1_fallback
