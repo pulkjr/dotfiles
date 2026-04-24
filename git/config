@@ -43,3 +43,5 @@
 
 [includeIf "gitdir:~/projects/personal/"]
     path = ~/projects/personal/.gitconfig
+[status]
+	submoduleSummary = 1
