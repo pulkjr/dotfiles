@@ -392,13 +392,17 @@ copilot() {
   fi
 
   local window_name="copilot-${version}"
-    podman run -it --rm --cap-drop=all --security-opt no-new-privileges \
+    podman run -it --rm \
+    --userns=keep-id \
+    --cap-drop=all --security-opt no-new-privileges \
     -w /projects \
+    -e HOME=/home/dev \
     -e "GH_TOKEN=${gh_token}" \
     -e "CONTAINER_IMAGE=copilot-${version}" \
     -e "CONTAINER_PROJECT=$(basename "${target_dir}")" \
-    -v "${target_dir}:/projects:rw" \
-    -v "${HOME}/linux-dotfiles/:/home/dev/.config:ro" \
-    -v "${HOME}/linux-dotfiles/bash/bashrc:/home/dev/.bashrc:ro" \
+    -v "${target_dir}:/projects:rw,z" \
+    -v "${HOME}/linux-dotfiles/:/home/dev/.config:rw,z" \
+    -v "${HOME}/linux-dotfiles/bash/bashrc:/home/dev/.bashrc:ro,z" \
+    -v "${HOME}/projects/work/aidocs/:/aidocs:ro,z" \
     "$image"
 }

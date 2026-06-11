@@ -18,8 +18,8 @@ defaults write com.apple.dock "show-recents" -bool "false"
 # Show only running apps in Dock
 defaults write com.apple.dock "static-only" -bool "true"
 
-# Remove the auto-hiding Dock delay
-defaults write com.apple.dock "autohide-delay" -float "0"
+# Set the Dock to 10 seconds before it will be shown
+defaults write com.apple.dock "autohide-delay" -float "10"
 
 killall Dock
 

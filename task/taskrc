@@ -33,3 +33,4 @@ report.list.filter=assigned: and status.not:Completed and status.not:Deleted and
 report.backlog.description=All of the tasks currently in the backlog
 report.backlog.filter=status.not:Completed and status.not:Deleted and assigned: +backlog
 report.backlog.columns=id,entry.age,due,project,description.count,tags
+news.version=3.4.2
