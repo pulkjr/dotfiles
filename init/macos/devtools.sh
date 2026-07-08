@@ -41,29 +41,22 @@ TMUX_PLUGIN_MANAGER_PATH="$HOME/.config/tmux/plugins" \
 
 tmux kill-session -t _tpm_setup_ 2>/dev/null || true
 
-# ── oh-my-zsh ────────────────────────────────────────────────────────────────
-# Use git clone instead of curl|sh: HTTPS transport provides integrity, avoids
-# piping untrusted remote scripts directly into a shell.
-OMZ_DIR="$HOME/.config/zsh/oh-my-zsh"
-if [[ -d "$OMZ_DIR" ]]; then
-    success "oh-my-zsh already installed at $OMZ_DIR. Skipping."
-else
-    info "Installing oh-my-zsh via git clone..."
-    git clone --depth=1 https://github.com/ohmyzsh/ohmyzsh.git "$OMZ_DIR"
-    success "oh-my-zsh installed."
-fi
-
 # ── zsh plugins ──────────────────────────────────────────────────────────────
-PLUGINS_DIR="$HOME/.config/zsh/oh-my-zsh/custom/plugins"
+PLUGINS_DIR="$HOME/.config/zsh/plugins"
 mkdir -p "$PLUGINS_DIR"
 
-clone_plugin() {
+clone_or_update_plugin() {
     local repo="$1"
     local name
     name="$(basename "$repo" .git)"
     local dest="$PLUGINS_DIR/$name"
     if [[ -d "$dest/.git" ]]; then
-        success "Plugin '$name' already cloned. Skipping."
+        info "Plugin '$name' already cloned. Pulling latest..."
+        if git -C "$dest" pull --ff-only; then
+            success "Plugin '$name' updated."
+        else
+            error "Failed to pull '$name' (network issue). Skipping."
+        fi
     else
         info "Cloning plugin '$name'..."
         git clone "$repo" "$dest"
@@ -71,9 +64,17 @@ clone_plugin() {
     fi
 }
 
-clone_plugin https://github.com/zsh-users/zsh-autosuggestions
-clone_plugin https://github.com/zsh-users/zsh-syntax-highlighting.git
-clone_plugin https://github.com/jeffreytse/zsh-vi-mode
+clone_or_update_plugin https://github.com/zsh-users/zsh-autosuggestions
+clone_or_update_plugin https://github.com/zsh-users/zsh-syntax-highlighting.git
+clone_or_update_plugin https://github.com/jeffreytse/zsh-vi-mode
+
+# ── bat theme cache ───────────────────────────────────────────────────────────
+if command -v bat >/dev/null 2>&1; then
+    info "Rebuilding bat theme cache (OneDark Darker)..."
+    bat cache --build && success "bat cache rebuilt."
+else
+    info "bat not found — skipping theme cache build."
+fi
 
 # ── minikube driver config ────────────────────────────────────────────────────
 if command -v minikube >/dev/null 2>&1; then

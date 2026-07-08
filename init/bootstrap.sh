@@ -113,11 +113,11 @@ git --git-dir="$DOTFILES_BARE" --work-tree="$DOTFILES_DIR" \
 success "Dotfiles checked out to $DOTFILES_DIR."
 
 # ── 3. Create ~/Projects ──────────────────────────────────────────────────────
-if [[ -d "$HOME/Projects" ]]; then
-    success "~/Projects already exists. Skipping."
+if [[ -d "$HOME/projects" ]]; then
+    success "~/projects already exists. Skipping."
 else
-    mkdir -p "$HOME/Projects"
-    success "Created ~/Projects."
+    mkdir -p "$HOME/projects"
+    success "Created ~/projects."
 fi
 
 # ── 4. Run setup.sh ───────────────────────────────────────────────────────────

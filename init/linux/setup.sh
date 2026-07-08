@@ -36,6 +36,19 @@ RPM_PACKAGES=(
     pcsc-lite-ccid
     task
     timew
+    # CLI tools
+    atuin
+    bat
+    eza
+    fd-find
+    fzf
+    git-delta
+    jq
+    lazygit
+    ncdu
+    ripgrep
+    wl-clipboard
+    zoxide
 )
 
 info "Installing core CLI packages via rpm-ostree (idempotent)..."

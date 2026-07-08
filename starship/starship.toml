@@ -1,7 +1,7 @@
 add_newline = true
 
 format = """
-$username$hostname${env_var.CONTAINER_IMAGE}${env_var.CONTAINER_PROJECT}$directory$git_branch$git_status$nodejs$python$rust$dotnet$cmd_duration$time$status
+$username$hostname${env_var.CONTAINER_IMAGE}${env_var.CONTAINER_PROJECT}$directory$git_branch$git_status$nodejs$python$rust$dotnet$cmd_duration$status
 $character"""
 
 [character]

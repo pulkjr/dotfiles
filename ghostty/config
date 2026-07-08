@@ -17,7 +17,7 @@ shell-integration-features = cursor,sudo,title
 term = xterm-256color
 
 # Theme
-theme = tokyonight_night
+theme = onedark-darker
 
 # Keybindings — tmux pane/window navigation
 # prefix is C-a (set in tmux config)

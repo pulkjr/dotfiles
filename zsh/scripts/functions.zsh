@@ -36,9 +36,9 @@ FZF-EOF"
 # https://bluz71.github.io/2018/11/26/fuzzy-finding-in-bash-with-fzf.html
 fzf_change_directory() {
 	local directory=$(
-		find . -type d | grep -v '.git' |
+		fd --type d --hidden --exclude .git |
 			fzf --query="$1" --no-multi --select-1 --exit-0 \
-				--preview 'tree -C {} | head -100'
+				--preview 'eza --tree --icons --level=3 --color=always {}'
 	)
 	if [[ -n $directory ]]; then
 		cd "$directory"
@@ -49,7 +49,7 @@ alias fcd='fzf_change_directory'
 
 fzf_open_file() {
 	local code_file=$(
-		find . -type f | grep -v '.git' |
+		fd --type f --hidden --exclude .git |
 			fzf --query="$1" --no-multi --select-1 --exit-0 \
 				--preview 'bat --style numbers,changes --color always {} | head -200'
 	)
@@ -68,6 +68,54 @@ alias fcode='fzf_open_file'
 
 # setup zoxide
 eval "$(zoxide init zsh --cmd cd)"
+
+# ── Plugin maintenance ────────────────────────────────────────────────────────
+# Update all zsh plugins and tmux plugins
+#   Usage: zsh-update
+zsh-update() {
+    local any_failed=0
+
+    echo "Updating zsh plugins..."
+    local plugins_dir="$HOME/.config/zsh/plugins"
+    for plugin_dir in "$plugins_dir"/*/; do
+        local name="${plugin_dir:t}"
+        printf "  %-35s" "$name"
+        local result
+        result=$(git -C "$plugin_dir" pull --ff-only 2>&1)
+        if echo "$result" | grep -q "Already up to date"; then
+            echo "✓ up to date"
+        elif echo "$result" | grep -q "error\|fatal"; then
+            echo "✗ failed: $result"
+            any_failed=1
+        else
+            echo "↑ updated"
+        fi
+    done
+
+    echo ""
+    echo "Updating tmux plugins..."
+    local tmux_plugins_dir="$HOME/.config/tmux/plugins"
+    for plugin_dir in "$tmux_plugins_dir"/*/; do
+        local name="${plugin_dir:t}"
+        printf "  %-35s" "$name"
+        if [[ ! -d "$plugin_dir/.git" ]]; then
+            echo "- skipped (not a git repo)"
+            continue
+        fi
+        local result
+        result=$(git -C "$plugin_dir" pull --ff-only 2>&1)
+        if echo "$result" | grep -q "Already up to date"; then
+            echo "✓ up to date"
+        elif echo "$result" | grep -q "error\|fatal"; then
+            echo "✗ failed: $result"
+            any_failed=1
+        else
+            echo "↑ updated"
+        fi
+    done
+
+    return $any_failed
+}
 
 # Validate that container bind-mount directories exist
 # Usage: _container_dirs_ok  (returns 1 and prints error if missing)

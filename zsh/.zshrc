@@ -1,86 +1,55 @@
 if [ -z "$TMUX" ] && [[ "$TERM_PROGRAM" == "ghostty" ]]; then
   tmux -f ~/.config/tmux/tmux.conf attach || exec tmux -f ~/.config/tmux/tmux.conf new-session
 fi
-# If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:/usr/local/bin:$PATH
 
-export ZSH="$HOME/.config/zsh/oh-my-zsh"
+# ── History ───────────────────────────────────────────────────────────────────
+HISTFILE=~/.config/zsh/.zsh_history
+HISTSIZE=50000
+SAVEHIST=10000
+setopt EXTENDED_HISTORY      # record timestamp with each command
+setopt SHARE_HISTORY         # share history across all sessions
+setopt HIST_IGNORE_DUPS      # skip consecutive duplicate commands
+setopt HIST_IGNORE_SPACE     # skip commands prefixed with a space
+setopt HIST_VERIFY           # confirm before executing history expansion
+setopt HIST_REDUCE_BLANKS    # trim extra whitespace from history entries
 
-# Set name of the theme to load --- if set to "random", it will
-# load a random theme each time oh-my-zsh is loaded, in which case,
-# to know which specific one was loaded, run: echo $RANDOM_THEME
-# See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-ZSH_THEME=""
+# ── Completion ────────────────────────────────────────────────────────────────
+autoload -Uz compinit
+_zcompdump="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zcompdump"
+mkdir -p "${_zcompdump:h}"
+compinit -d "$_zcompdump"
+unset _zcompdump
 
-# Set list of themes to pick from when loading at random
-# Setting this variable when ZSH_THEME=random will cause zsh to load
-# a theme from this variable instead of looking in ~/.oh-my-zsh/themes/
-# If set to an empty array, this variable will have no effect.
-# ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'  # case-insensitive completion
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+zstyle ':completion:*:git-checkout:*' sort false
 
-# Uncomment the following line to use case-sensitive completion.
-# CASE_SENSITIVE="true"
+# ── Directory navigation ──────────────────────────────────────────────────────
+setopt AUTO_CD           # type a directory name to cd into it
+setopt AUTO_PUSHD        # cd pushes old dir onto stack
+setopt PUSHD_IGNORE_DUPS # no duplicate dirs in the stack
 
-# Uncomment the following line to use hyphen-insensitive completion.
-# Case-sensitive completion must be off. _ and - will be interchangeable.
-# HYPHEN_INSENSITIVE="true"
+# ── Plugins ───────────────────────────────────────────────────────────────────
+_zsh_plugins="$HOME/.config/zsh/plugins"
 
-# Uncomment the following line to disable bi-weekly auto-update checks.
-# DISABLE_AUTO_UPDATE="true"
+source "$_zsh_plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
+source "$_zsh_plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 
-# Uncomment the following line to automatically update without prompting.
-# DISABLE_UPDATE_PROMPT="true"
+# fzf and atuin must be (re)applied after zsh-vi-mode resets the keymap.
+# Define the hook before sourcing the plugin so it is called at init time.
+function zvm_after_init() {
+    source <(fzf --zsh)
+    eval "$(atuin init zsh --disable-up-arrow)"
+}
+source "$_zsh_plugins/zsh-vi-mode/zsh-vi-mode.plugin.zsh"
+unset _zsh_plugins
 
-# Uncomment the following line to change how often to auto-update (in days).
-# export UPDATE_ZSH_DAYS=13
-
-# Uncomment the following line if pasting URLs and other text is messed up.
-# DISABLE_MAGIC_FUNCTIONS=true
-
-# Uncomment the following line to disable colors in ls.
-# DISABLE_LS_COLORS="true"
-
-# Uncomment the following line to disable auto-setting terminal title.
-# DISABLE_AUTO_TITLE="true"
-
-# Uncomment the following line to enable command auto-correction.
-# ENABLE_CORRECTION="true"
-
-# Uncomment the following line to display red dots whilst waiting for completion.
-# COMPLETION_WAITING_DOTS="true"
-
-# Uncomment the following line if you want to disable marking untracked files
-# under VCS as dirty. This makes repository status check for large repositories
-# much, much faster.
-# DISABLE_UNTRACKED_FILES_DIRTY="true"
-
-HIST_STAMPS="yyyy-mm-dd"
-
-plugins=(
-    git
-    gitfast
-    macos
-    zsh-autosuggestions
-    zsh-syntax-highlighting
-    zsh-vi-mode
-)
-
-source $ZSH/oh-my-zsh.sh
-
-# Commenting these for a time to see if their needed.
-# autoload -U +X bashcompinit && bashcompinit
-# complete -o nospace -C /usr/local/bin/terraform terraform
-# autoload -Uz compinit
-# compinit
-
-# Load all of the sub resources in ~/.zshrc.d/*.zsh
-# get the directory where this file is located
+# ── Load config scripts ───────────────────────────────────────────────────────
 _custom_zsh_config_base="${${(%):-%x}:A:h}"
 
-# bail out if global config is disabled
 [[ ($_custom_zsh_config_base == /etc/* || ($_custom_zsh_config_base == /opt/*)) && $_custom_zsh_no_global == 1 ]] && return
 
-# bail out if we are already loaded
 if (( _custom_zsh_config_loaded )); then
 	print -P '%B%F{red}The custom ZSH config is already loaded (probably from the global zshrc)%f%b'
 	print -P "%B%F{red}The local version ($_custom_zsh_config_base) has NOT been loaded%f%b"
@@ -90,12 +59,9 @@ if (( _custom_zsh_config_loaded )); then
 fi
 _custom_zsh_config_loaded=1
 
-# load all config files
 for file ($_custom_zsh_config_base/scripts/*.zsh(N)); do
 	source $file
 done
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-# Initialize Starship prompt (must be last)
+# ── Initialize Starship prompt (must be last) ─────────────────────────────────
 eval "$(starship init zsh)"

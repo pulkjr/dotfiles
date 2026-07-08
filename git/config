@@ -4,7 +4,7 @@
 	olg = log --graph --decorate --pretty=oneline --abbrev-commit --all
 [core]
 	editor = vim
-	pager = bat
+	pager = delta
 	excludesFile = ~/.config/git/ignore
 [init]
 	defaultBranch = main
@@ -23,6 +23,13 @@
 	required = true
 [rerere]
 	enabled = true
+[delta]
+	navigate = true
+	side-by-side = true
+	line-numbers = true
+	hyperlinks = true
+[interactive]
+	diffFilter = delta --color-only
 [branch]
 	sort = -committerdate
 [gpg]
