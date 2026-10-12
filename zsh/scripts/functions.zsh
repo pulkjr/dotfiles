@@ -151,10 +151,14 @@ nvim() {
     -w /projects \
     -e CONTAINER_IMAGE=nvim-base \
     -e "CONTAINER_PROJECT=$(basename "$PWD")" \
+    -e GIT_CONFIG_COUNT=1 \
+    -e GIT_CONFIG_KEY_0=core.fsmonitor \
+    -e GIT_CONFIG_VALUE_0=false \
     -v "$PWD":/projects \
     -v "$HOME/linux-dotfiles/":/home/dev/.config \
     -v "$HOME/linux-local":/home/dev/.local/ \
     -v "$HOME/linux-dotfiles/bash/bashrc":/home/dev/.bashrc \
+    -v "$HOME/projects/personal/zk":/home/dev/zk \
     nvim-base nvim "$nvim_target"
 }
 
@@ -302,10 +306,18 @@ bwu() {
     echo "Bitwarden unlocked. BW_SESSION exported and persisted to ~/.bw_session."
   fi
 }
+# ─────────────────────────────────────────────────────────────
+# Common container config
+# ─────────────────────────────────────────────────────────────
+_container_common=(
+  -e GIT_CONFIG_COUNT=1
+  -e GIT_CONFIG_KEY_0=core.fsmonitor
+  -e GIT_CONFIG_VALUE_0=false
+)
 
 # Inject a Bitwarden secret as an env var into a container function call
 # Usage: bw-inject VAR_NAME bw-item-name <container-function> [function-args...]
-# Example: bw-inject GITHUB_TOKEN my-gh-token dotnet /path/to/project
+# Example: bw-inject ANTHROPIC_API_KEY anthropic-api-key claude rust /path/to/project
 bw-inject() {
   local var_name="${1:?Usage: bw-inject VAR_NAME item-name func [args]}"
   local item_name="${2:?}"
@@ -316,107 +328,61 @@ bw-inject() {
   env "${var_name}=${value}" "$@"
 }
 
-# Enter a dotnet container
+# ─────────────────────────────────────────────────────────────
+# Base dev containers (no AI tooling)
+# ─────────────────────────────────────────────────────────────
 dotnet() {
   _container_dirs_ok || return 1
   local target_dir="${1:-$PWD}"
-    podman run -it --rm \
+  podman run -it --rm \
     -w /projects \
     -e CONTAINER_IMAGE=dotnet \
     -e "CONTAINER_PROJECT=$(basename "${target_dir}")" \
+    "${_container_common[@]}" \
     -v "${target_dir}:/projects" \
     -v "${HOME}/linux-dotfiles/:/home/dev/.config" \
     -v "${HOME}/linux-local:/home/dev/.local/" \
     -v "${HOME}/linux-dotfiles/bash/bashrc:/home/dev/.bashrc" \
-    dotnet
+    -v "$HOME/projects/personal/zk":/home/dev/zk \
+    dotnet-final
 }
-# Enter a rust container
+
 rust() {
   _container_dirs_ok || return 1
   local target_dir="${1:-$PWD}"
-    podman run -it --rm \
+  podman run -it --rm \
     -w /projects \
-    -e CONTAINER_IMAGE=rust \
+    -e CONTAINER_IMAGE=rust-final \
     -e "CONTAINER_PROJECT=$(basename "${target_dir}")" \
+    "${_container_common[@]}" \
     -v "${target_dir}:/projects" \
     -v "${HOME}/linux-dotfiles/:/home/dev/.config" \
     -v "${HOME}/linux-local:/home/dev/.local/" \
     -v "${HOME}/linux-dotfiles/bash/bashrc:/home/dev/.bashrc" \
-    rust
-}
-# One-time setup: store your GitHub Personal Access Token in Bitwarden.
-# The copilot() function reads this token automatically when you launch the container.
-#
-# ⚠️  GitHub Copilot requires a Fine-Grained PAT — classic PATs (ghp_) are NOT supported.
-#
-# Where to get a Fine-Grained PAT:
-#   1. Go to: https://github.com/settings/tokens?type=beta
-#   2. Click "Generate new token"
-#   3. Token name: e.g. "copilot-cli"
-#   4. Expiration: your preference
-#   5. Resource owner: your account
-#   6. Repository access: "Public Repositories (read-only)" is sufficient
-#   7. No extra permissions needed — click "Generate token"
-#   8. Copy the token (starts with github_pat_)
-#
-# Alternatively, if you have the gh CLI installed and authenticated:
-#   gh auth login   (run once, uses browser OAuth — no token to manage)
-#   gh auth token   (prints the stored token you can paste below)
-#
-# Requires: bwu must have been run first (BW_SESSION must be set)
-#   Usage: copilot-store-token
-copilot-store-token() {
-  if [[ -z "${BW_SESSION:-}" ]]; then
-    echo "copilot-store-token: BW_SESSION not set. Run 'bwu' first to unlock Bitwarden."
-    return 1
-  fi
-  echo ""
-  echo "GitHub Fine-Grained PAT setup for Copilot"
-  echo "──────────────────────────────────────────────────────────────"
-  echo "  ⚠️  Classic PATs (ghp_) are NOT supported — use a fine-grained PAT."
-  echo ""
-  echo "  Option A — Create a Fine-Grained PAT manually:"
-  echo "    1. Open: https://github.com/settings/tokens?type=beta"
-  echo "    2. Click 'Generate new token'"
-  echo "    3. Set resource owner to your account, any expiration"
-  echo "    4. Repository access: 'Public Repositories (read-only)' is enough"
-  echo "    5. Generate — token starts with github_pat_"
-  echo ""
-  echo "  Option B — Use gh CLI (if already authenticated via gh auth login):"
-  echo "    Run: gh auth token   (then paste the output below)"
-  echo "──────────────────────────────────────────────────────────────"
-  echo ""
-  local token
-  echo -n "Paste your Fine-Grained PAT (github_pat_...): "
-  read -rs token; echo
-  [[ -z "$token" ]] && { echo "No token entered. Aborted."; return 1; }
-
-  if ! command -v jq &>/dev/null; then
-    echo "copilot-store-token: 'jq' not found. Install it: brew install jq"; return 1
-  fi
-
-  local item_json
-  item_json="$(bw get template item | jq --arg t "$token" \
-    '.type=1 | .name="github-copilot-token" | .login={password:$t}')"
-
-  echo "$item_json" | bw encode | bw create item > /dev/null \
-    && echo "✅ Token stored in Bitwarden as 'github-copilot-token'. You can now run: copilot" \
-    || { echo "Failed to create Bitwarden item. Ensure BW_SESSION is valid (run bwu)."; return 1; }
+    -v "$HOME/projects/personal/zk":/home/dev/zk \
+    rust-final
 }
 
-# Enter the copilot container
-# Injects GH_TOKEN from env (if set) or fetches it from Bitwarden item 'github-copilot-token'.
-# Prerequisites: run bwu first so BW_SESSION is set, or export GH_TOKEN manually.
-#   Usage: copilot [version] [directory]
-#     version: "dotnet" (default) or "rust"
-#     directory: path to mount as /projects (defaults to $PWD)
-copilot() {
+# ─────────────────────────────────────────────────────────────
+# Claude Code container
+# Wraps your base dev containers with Claude Code + Anthropic API key
+#
+# Usage: claude [version] [directory]
+#   version:   "rust" (default) or "dotnet"
+#   directory:  path to mount as /projects (defaults to $PWD)
+#
+# Examples:
+#   claude                        # rust + $PWD
+#   claude dotnet                 # dotnet + $PWD
+#   claude rust /path/to/project  # rust + specific dir
+#   claude /path/to/project       # rust + specific dir
+# ─────────────────────────────────────────────────────────────
+claude() {
   _container_dirs_ok || return 1
 
-  local version="dotnet"
+  local version="rust"
   local target_dir="$PWD"
 
-  # Parse args: first arg is version if it matches a known variant, otherwise treat as directory
   for arg in "$@"; do
     case "$arg" in
       dotnet|rust) version="$arg" ;;
@@ -424,33 +390,27 @@ copilot() {
     esac
   done
 
-  local image="localhost/copilot-${version}-final"
+  local image="localhost/${version}-final"
 
-  local gh_token="${GH_TOKEN:-}"
-
-  if [[ -z "$gh_token" ]]; then
-    if [[ -z "${BW_SESSION:-}" ]]; then
-      echo "copilot: GH_TOKEN not set and BW_SESSION not found."
-      echo "  Option 1: export GH_TOKEN=<your-github-pat>"
-      echo "  Option 2: run 'bwu' first, then store your token in Bitwarden as 'github-copilot-token'"
-      return 1
-    fi
-    gh_token="$(bw get password github-copilot-token 2>/dev/null)" \
-      || { echo "copilot: 'github-copilot-token' not found in Bitwarden. Run: copilot-store-token"; return 1; }
-  fi
-
-  local window_name="copilot-${version}"
-    podman run -it --rm \
+  podman run -it --rm \
     --userns=keep-id \
     --cap-drop=all --security-opt no-new-privileges \
     -w /projects \
     -e HOME=/home/dev \
-    -e "GH_TOKEN=${gh_token}" \
-    -e "CONTAINER_IMAGE=copilot-${version}" \
+    -e NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-certificates.crt \
+    -e "CONTAINER_IMAGE=claude-${version}" \
     -e "CONTAINER_PROJECT=$(basename "${target_dir}")" \
+    "${_container_common[@]}" \
     -v "${target_dir}:/projects:rw,z" \
     -v "${HOME}/linux-dotfiles/:/home/dev/.config:rw,z" \
+    -v "${HOME}/linux-local:/home/dev/.local/:rw,z" \
     -v "${HOME}/linux-dotfiles/bash/bashrc:/home/dev/.bashrc:ro,z" \
+    -v "${HOME}/linux-dotfiles/claude:/home/dev/.claude:rw,z" \
+    -v "${HOME}/linux-dotfiles/.claude.json:/home/dev/.claude.json:rw,z" \
+    -v "$HOME/projects/personal/zk":/home/dev/zk \
     -v "${HOME}/projects/work/aidocs/:/aidocs:ro,z" \
     "$image"
+
+  # Clean up — don't leave the key in shell memory
+  unset _resolved_anthropic_key
 }
